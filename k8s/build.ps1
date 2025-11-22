@@ -8,25 +8,17 @@ docker-compose build
 # Check if build was successful
 if ($LASTEXITCODE -eq 0) {
     Write-Host "`nBuild completed successfully!" -ForegroundColor Green
-    
-    Write-Host "`nBuilding frontend image..." -ForegroundColor Yellow
-    docker build -t microservice-frontend:latest frontend
-
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "`nFrontend build failed! Please check the errors above." -ForegroundColor Red
-        exit 1
-    }
 
     # List the built images
     Write-Host "`nBuilt images:" -ForegroundColor Cyan
-    docker images | Select-String "microservice"
+    docker images | Select-String "sds-final-project"
     
     # Tag images for Kubernetes
     Write-Host "`nTagging images for Kubernetes..." -ForegroundColor Yellow
-    docker tag microservice-api-gateway:latest api-gateway:latest
-    docker tag microservice-shrine-service:latest shrine-service:latest
-    docker tag microservice-location-service:latest location-service:latest
-    docker tag microservice-frontend:latest frontend:latest
+    docker tag sds-final-project-api-gateway:latest api-gateway:latest
+    docker tag sds-final-project-shrine-service:latest shrine-service:latest
+    docker tag sds-final-project-location-service:latest location-service:latest
+    docker tag sds-final-project-frontend:latest frontend:latest
     
     Write-Host "`nImages tagged successfully!" -ForegroundColor Green
     Write-Host "`nKubernetes images:" -ForegroundColor Cyan
