@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Comprehensive Seed Script for All Microservices
- * Seeds PostgreSQL databases: shrine-db, user-db, wishing-db, rating-db
+ * Comprehensive Seed Script for Microservices
+ * Seeds PostgreSQL database: shrine-db
  */
 
 const { Client } = require('pg');
@@ -15,27 +15,6 @@ const databases = {
     user: 'postgres',
     password: 'postgres',
     database: 'shrine_service',
-  },
-  user: {
-    host: 'localhost',
-    port: 5434,
-    user: 'postgres',
-    password: 'postgres',
-    database: 'user_service',
-  },
-  wishing: {
-    host: 'localhost',
-    port: 5433,
-    user: 'postgres',
-    password: 'postgres',
-    database: 'wishing_service',
-  },
-  rating: {
-    host: 'localhost',
-    port: 5435,
-    user: 'postgres',
-    password: 'postgres',
-    database: 'rating_service',
   },
 };
 
@@ -445,22 +424,13 @@ async function main() {
   console.log('='.repeat(60));
 
   try {
-    // Seed all databases
+    // Seed shrine database
     await seedDatabase('Shrine Database', databases.shrine, seedShrines);
-    await seedDatabase('User Database', databases.user, seedUsers);
-    await seedDatabase('Wishing Database', databases.wishing, seedWishes);
-    await seedDatabase('Rating Database', databases.rating, seedRatings);
 
     console.log('\n' + '='.repeat(60));
-    console.log('✅ All databases seeded successfully!');
+    console.log('✅ Database seeded successfully!');
     console.log('\n📊 Summary:');
     console.log(`   - Shrines: ${shrineData.length}`);
-    console.log(`   - Users: ${userData.length}`);
-    console.log(`   - Wishes: ${wishData.length}`);
-    console.log(`   - Ratings: ${ratingData.length}`);
-    console.log('\n🔑 Test User Credentials:');
-    console.log('   Email: john.doe@example.com');
-    console.log('   Password: password123');
     console.log('\n🚀 You can now test the services!');
   } catch (error) {
     console.error('\n❌ Seeding failed:', error.message);

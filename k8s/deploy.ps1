@@ -13,14 +13,10 @@ kubectl apply -f k8s/secrets.yaml
 # 3. Deploy databases
 Write-Host "`n3. Deploying databases..." -ForegroundColor Yellow
 kubectl apply -f k8s/shrine-db.yaml
-kubectl apply -f k8s/user-db.yaml
-kubectl apply -f k8s/wishing-db.yaml
-kubectl apply -f k8s/rating-db.yaml
 
 # 4. Deploy RabbitMQ
 Write-Host "`n4. Deploying RabbitMQ..." -ForegroundColor Yellow
 kubectl apply -f k8s/rabbitmq.yaml
-kubectl apply -f k8s/redis.yaml
 
 # Wait for databases to be ready
 Write-Host "`n5. Waiting for databases to be ready..." -ForegroundColor Yellow
@@ -29,12 +25,7 @@ Start-Sleep -Seconds 30
 # 6. Deploy microservices
 Write-Host "`n6. Deploying microservices..." -ForegroundColor Yellow
 kubectl apply -f k8s/shrine-service.yaml
-kubectl apply -f k8s/user-service.yaml
-kubectl apply -f k8s/technique-service.yaml
 kubectl apply -f k8s/location-service.yaml
-kubectl apply -f k8s/rating-service.yaml
-kubectl apply -f k8s/shrine-discovery-service.yaml
-kubectl apply -f k8s/wishing-service.yaml
 
 # Wait for services to be ready
 Write-Host "`n7. Waiting for services to be ready..." -ForegroundColor Yellow

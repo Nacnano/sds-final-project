@@ -26,73 +26,6 @@ services:
     networks:
       - microservices-network
 
-  user-db:
-    image: postgres:15-alpine
-    container_name: user-db
-    environment:
-      POSTGRES_DB: user_service
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5434:5432"
-    volumes:
-      - user_db_data:/var/lib/postgresql/data
-    networks:
-      - microservices-network
-
-  user-service:
-    build:
-      context: .
-      dockerfile: apps/user-service/Dockerfile
-    container_name: user-service
-    env_file:
-      - .env
-    environment:
-      DATABASE_HOST: user-db
-      DATABASE_PORT: 5432
-      DATABASE_USER: postgres
-      DATABASE_PASSWORD: postgres
-      DATABASE_NAME: user_service
-      USER_GRPC_PORT: 5005
-      JWT_SECRET: ${JWT_SECRET}
-      NODE_ENV: production
-    ports:
-      - "5005:5005"
-    depends_on:
-      - user-db
-    networks:
-      - microservices-network
-    volumes:
-      - ./proto:/app/proto
-
-  wishing-db:
-    image: postgres:15-alpine
-    container_name: wishing-db
-    environment:
-      POSTGRES_DB: wishing_service
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5433:5432"
-    volumes:
-      - wishing_db_data:/var/lib/postgresql/data
-    networks:
-      - microservices-network
-
-  rating-db:
-    image: postgres:15-alpine
-    container_name: rating-db
-    environment:
-      POSTGRES_DB: rating_service
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5435:5432"
-    volumes:
-      - rating_db_data:/var/lib/postgresql/data
-    networks:
-      - microservices-network
-
   # Microservices
   shrine-service:
     build:
@@ -118,46 +51,6 @@ services:
     volumes:
       - ./proto:/app/proto
 
-  technique-service:
-    build:
-      context: .
-      dockerfile: apps/technique-service/Dockerfile
-    container_name: technique-service
-    env_file:
-      - .env
-    environment:
-      NODE_ENV: production
-      TECHNIQUE_HTTP_PORT: 5002
-    ports:
-      - "5002:5002"
-    networks:
-      - microservices-network
-
-  shrine-discovery-service:
-    build:
-      context: .
-      dockerfile: apps/shrine-discovery-service/Dockerfile
-    container_name: shrine-discovery-service
-    env_file:
-      - .env
-    environment:
-      NODE_ENV: production
-      SHRINE_SERVICE_URL: shrine-service:5001
-      LOCATION_SERVICE_URL: location-service:5006
-      RATING_SERVICE_URL: rating-service:5007
-      WISHING_SERVICE_URL: wishing-service:5004
-    ports:
-      - "5003:5003"
-    depends_on:
-      - shrine-service
-      - location-service
-      - rating-service
-      - wishing-service
-    networks:
-      - microservices-network
-    volumes:
-      - ./proto:/app/proto
-
   location-service:
     build:
       context: .
@@ -176,56 +69,6 @@ services:
     volumes:
       - ./proto:/app/proto
 
-  wishing-service:
-    build:
-      context: .
-      dockerfile: apps/wishing-service/Dockerfile
-    container_name: wishing-service
-    env_file:
-      - .env
-    environment:
-      NODE_ENV: production
-      WISHING_DATABASE_HOST: wishing-db
-      WISHING_DATABASE_PORT: 5432
-      SHRINE_SERVICE_URL: shrine-service:5001
-    ports:
-      - "5004:5004"
-    depends_on:
-      - wishing-db
-      - shrine-service
-    networks:
-      - microservices-network
-    volumes:
-      - ./proto:/app/proto
-
-  rating-service:
-    build:
-      context: .
-      dockerfile: apps/rating-service/Dockerfile
-    container_name: rating-service
-    env_file:
-      - .env
-    environment:
-      NODE_ENV: production
-      RATING_DB_HOST: rating-db
-      RATING_DB_PORT: 5432
-      RATING_DB_USER: postgres
-      RATING_DB_PASSWORD: postgres
-      RATING_DB_NAME: rating_service
-      RATING_GRPC_PORT: 5007
-      USER_GRPC_URL: user-service:5005
-      SHRINE_GRPC_URL: shrine-service:5001
-    ports:
-      - "5007:5007"
-    depends_on:
-      - rating-db
-      - user-service
-      - shrine-service
-    networks:
-      - microservices-network
-    volumes:
-      - ./proto:/app/proto
-
   api-gateway:
     build:
       context: .
@@ -236,28 +79,17 @@ services:
     environment:
       SHRINE_SERVICE_URL: shrine-service:5001
       LOCATION_SERVICE_URL: location-service:5006
-      TECHNIQUE_SERVICE_URL: http://technique-service:5002
-      USER_SERVICE_URL: user-service:5005
-      RATING_SERVICE_URL: rating-service:5007
       JWT_SECRET: ${JWT_SECRET}
-      SHRINE_DISCOVERY_SERVICE_URL: shrine-discovery-service:5003
-      WISHING_SERVICE_URL: wishing-service:5004
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL}
       FRONTEND_URL: http://localhost:5173
       NODE_ENV: production
-      # add other service
     ports:
       - "3000:3000"
     depends_on:
       - shrine-service
-      - user-service
       - location-service
-      - wishing-service
-      - technique-service
-      - shrine-discovery-service
-      - rating-service
     networks:
       - microservices-network
     volumes:
@@ -274,19 +106,11 @@ services:
       - "8080:80"
     depends_on:
       - shrine-db
-      - user-db
-      - wishing-db
-      - rating-db
-      # add other databases
     networks:
       - microservices-network
 
 volumes:
   shrine_db_data:
-  user_db_data:
-  wishing_db_data:
-  rating_db_data:
-  # add other volumes db_data
 
 networks:
   microservices-network:

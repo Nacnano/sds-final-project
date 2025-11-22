@@ -5,24 +5,6 @@ services:
       - ./libs:/app/libs
     environment:
       NODE_ENV: development
-    
-  technique-service:
-    volumes:
-      - ./apps/technique-service/src:/app/apps/technique-service/src
-      - ./libs:/app/libs
-      - ./proto:/app/proto
-      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml
-    environment:
-      NODE_ENV: development
-
-  shrine-discovery-service:
-    volumes:
-      - ./apps/shrine-discovery-service/src:/app/apps/shrine-discovery-service/src
-      - ./libs:/app/libs
-      - ./proto:/app/proto
-      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml
-    environment:
-      NODE_ENV: development
 
   api-gateway:
     volumes:
