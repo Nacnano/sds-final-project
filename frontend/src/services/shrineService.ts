@@ -1,0 +1,29 @@
+import api from './api';
+import type { Shrine, CreateShrineRequest } from '../types';
+
+export const shrineService = {
+  async getAll(): Promise<Shrine[]> {
+    const response = await api.get<{ shrines: Shrine[] }>('/shrines');
+    return response.data.shrines;
+  },
+
+  async getById(id: string): Promise<Shrine> {
+    const response = await api.get<Shrine>(`/shrines/${id}`);
+    return response.data;
+  },
+
+  async create(data: CreateShrineRequest): Promise<Shrine> {
+    const response = await api.post<Shrine>('/shrines', data);
+    return response.data;
+  },
+
+  async update(id: string, data: Partial<CreateShrineRequest>): Promise<Shrine> {
+    const response = await api.patch<Shrine>(`/shrines/${id}`, data);
+    return response.data;
+  },
+
+  async delete(id: string): Promise<Shrine> {
+    const response = await api.delete<Shrine>(`/shrines/${id}`);
+    return response.data;
+  },
+};

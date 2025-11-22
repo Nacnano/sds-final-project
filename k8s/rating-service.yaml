@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rating-service
+  namespace: microservices
+  labels:
+    app: rating-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rating-service
+  template:
+    metadata:
+      labels:
+        app: rating-service
+    spec:
+      containers:
+        - name: rating-service
+          image: rating-service:latest
+          imagePullPolicy: Never # For local Docker Desktop; change when deploying to a registry
+          ports:
+            - containerPort: 5007
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: NODE_ENV
+            - name: RATING_GRPC_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: RATING_GRPC_PORT
+            - name: RATING_DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: RATING_DATABASE_HOST
+            - name: RATING_DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: RATING_DATABASE_PORT
+            - name: RATING_DB_NAME
+              value: rating_service
+            - name: RATING_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: microservices-secrets
+                  key: POSTGRES_USER
+            - name: RATING_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: microservices-secrets
+                  key: POSTGRES_PASSWORD
+            - name: USER_GRPC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: USER_SERVICE_URL
+            - name: SHRINE_GRPC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: SHRINE_SERVICE_URL
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '250m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rating-service
+  namespace: microservices
+spec:
+  selector:
+    app: rating-service
+  ports:
+    - port: 5007
+      targetPort: 5007
+  type: ClusterIP

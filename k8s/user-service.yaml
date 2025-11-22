@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: microservices
+  labels:
+    app: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: user-service:latest
+          imagePullPolicy: Never # For local Docker Desktop
+          ports:
+            - containerPort: 5005
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: NODE_ENV
+            - name: USER_GRPC_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: USER_GRPC_PORT
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: USER_DATABASE_HOST
+            - name: DATABASE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: USER_DATABASE_PORT
+            - name: DATABASE_NAME
+              value: user_service
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: microservices-secrets
+                  key: DATABASE_USER
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: microservices-secrets
+                  key: DATABASE_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: microservices-secrets
+                  key: JWT_SECRET
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '250m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: microservices
+spec:
+  selector:
+    app: user-service
+  ports:
+    - port: 5005
+      targetPort: 5005
+  type: ClusterIP

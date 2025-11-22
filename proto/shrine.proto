@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package shrine;
+
+service ShrineService {
+  rpc CreateShrine (CreateShrineRequest) returns (ShrineResponse);
+  rpc FindShrineById (FindShrineByIdRequest) returns (ShrineResponse);
+  rpc FindAllShrines (Empty) returns (ShrinesResponse);
+  rpc UpdateShrineById (UpdateShrineByIdRequest) returns (ShrineResponse);
+  rpc DeleteShrineById (FindShrineByIdRequest) returns (ShrineResponse);
+}
+
+message CreateShrineRequest {
+  string name = 1;
+  string description = 2;
+  string location = 3;
+  optional string imageUrl = 4;
+  optional string category = 5;
+}
+
+message FindShrineByIdRequest {
+  string id = 1;
+}
+
+message UpdateShrineByIdRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string description = 3;
+  optional string location = 4;
+  optional string imageUrl = 5;
+  optional string category = 6;
+}
+
+message DeleteShrineByIdRequest {
+  string id = 1;
+}
+
+message ShrineResponse {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  double lat = 4;
+  double lng = 5;
+  string location = 6;
+  string createdAt = 7;
+  string updatedAt = 8;
+  optional string imageUrl = 9;
+  optional string category = 10;
+}
+
+message ShrinesResponse {
+  repeated ShrineResponse shrines = 1;
+}
+
+message Empty {}

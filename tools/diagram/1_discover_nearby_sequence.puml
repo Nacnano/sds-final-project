@@ -1,0 +1,75 @@
+@startuml discover_nearby_sequence
+title Use case 1: Discover Nearby Shrines & Contributing Information - Sequence Diagram
+
+actor User
+participant "Browser / Mobile App" as Browser
+participant "Frontend (sai.mu)" as Frontend
+participant "API Gateway" as APIGateway
+participant "Location Service" as LocationService
+participant "Shrine Discovery Service" as ShrineDiscovery
+participant "Shrine Service" as ShrineService
+participant "Rating Service" as RatingService
+database "Shrine DB" as DB
+participant "Auth / Permissions" as Auth
+actor Admin
+
+== User location flow ==
+User -> Browser: Open site and allow location
+Browser -> Frontend: Provide coordinates (lat,lng)
+Frontend -> APIGateway: GET /shrines/nearby?lat=...&lng=...&radius=10km&type=<wishType>&sort=<option>
+APIGateway -> Auth: Verify request / user token (optional)
+Auth --> APIGateway: OK
+APIGateway -> ShrineDiscovery: GET /discover/nearby?lat=...&lng=...&radius=10km&type=<wishType>&sort=<option>
+ShrineDiscovery -> LocationService: Normalize/validate coords
+LocationService --> ShrineDiscovery: normalized coords
+ShrineDiscovery -> ShrineService: Request shrines within 10km matching wish type
+ShrineService -> DB: SELECT * FROM shrines WHERE distance <= 10000 AND wish_types CONTAINS <wishType>
+DB --> ShrineService: list of candidate shrines
+ShrineService --> ShrineDiscovery: candidate shrines (ids, meta)
+ShrineDiscovery -> RatingService: GET ratings/popularity for candidate shrine IDs
+RatingService -> DB: SELECT rating, popularity FROM shrine_ratings WHERE shrine_id IN (...)
+DB --> RatingService: rating & popularity data
+RatingService --> ShrineDiscovery: rating & computed score
+note right of ShrineDiscovery: Combine location relevance + rating + popularity
+ShrineDiscovery -> ShrineDiscovery: compute combined score & sort results by requested sort
+ShrineDiscovery --> APIGateway: 200 OK {shrines[], recommended: top_match}
+APIGateway --> Frontend: 200 OK {shrines[], recommended}
+Frontend -> Browser: Render map/list, sorting controls, and recommended shrine
+
+alt user explores details
+    Browser -> Frontend: User requests shrine details
+    Frontend -> APIGateway: GET /shrines/{id}
+    APIGateway -> ShrineService: fetch shrine details
+    ShrineService -> DB: SELECT * FROM shrine WHERE id = {id}
+    DB --> ShrineService: shrine record
+    ShrineService --> APIGateway: shrine details (photos, story, opening times)
+    APIGateway --> Frontend: shrine details
+    Frontend --> Browser: show details UI
+end
+
+== Admin editing shrine details ==
+Admin -> Browser: Admin UI (edit shrine)
+Browser -> Frontend: Submit edit (address, story, openingTimes)
+Frontend -> APIGateway: PATCH /shrines/{id} {payload}
+APIGateway -> Auth: verify admin privileges
+Auth --> APIGateway: OK (admin)
+APIGateway -> ShrineService: update shrine {id, payload}
+ShrineService -> DB: UPDATE shrine SET ... WHERE id = {id}
+DB --> ShrineService: update confirmation
+ShrineService --> APIGateway: 200 OK
+APIGateway --> Frontend: 200 OK
+Frontend --> Browser: show success toast
+
+
+
+
+alt location denied
+    User -> Browser: Deny location permission
+    Browser -> Frontend: No coords available
+    Frontend --> Browser: Prompt manual search (enter location or use city)
+end
+
+== Recommendation logic (internal) ==
+note over ShrineService,RatingService: Recommendation: filter by wish type, within radius, score = f(rating, popularity, proximity)
+
+@enduml

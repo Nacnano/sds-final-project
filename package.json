@@ -1,0 +1,118 @@
+{
+  "name": "microservices-app",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "nest build",
+    "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:all": "concurrently \"npm run start:dev:user\" \"npm run start:dev:shrine\" \"npm run start:dev:rating\" \"npm run start:dev:location\" \"npm run start:dev:gateway\" \"npm run start:dev:technique\" \"npm run start:dev:discovery\" \"npm run start:dev:wishing\" \"npm run start:dev:frontend\"",
+    "start:dev:frontend": "cd frontend && pnpm run dev",
+    "proto:generate": "protoc -I ./proto --plugin=protoc-gen-ts_proto=.\\node_modules\\.bin\\protoc-gen-ts_proto.cmd --ts_proto_out=./libs/shared/src/interfaces --ts_proto_opt=nestJs=true ./proto/*.proto",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.override.yml up --build",
+    "reset:docker": "powershell -ExecutionPolicy Bypass -File ./tools/scripts/reset-docker.ps1",
+    "reset:local": "powershell -ExecutionPolicy Bypass -File ./tools/scripts/reset-local.ps1",
+    "k8s:build": "powershell -ExecutionPolicy Bypass -File ./k8s/build.ps1",
+    "k8s:deploy": "powershell -ExecutionPolicy Bypass -File ./k8s/deploy.ps1",
+    "k8s:delete": "powershell -ExecutionPolicy Bypass -File ./k8s/delete.ps1",
+    "k8s:seed": "powershell -ExecutionPolicy Bypass -File ./k8s/seed.ps1",
+    "db:seed:all": "node tools/scripts/seed-all-databases.js"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.8.0",
+    "@googlemaps/google-maps-services-js": "^3.4.2",
+    "@grpc/grpc-js": "^1.13.4",
+    "@grpc/proto-loader": "^0.8.0",
+    "@nestjs/axios": "^4.0.1",
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/jwt": "^11.0.1",
+    "@nestjs/microservices": "^11.1.6",
+    "@nestjs/mongoose": "^11.0.3",
+    "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/typeorm": "^11.0.0",
+    "@types/bcrypt": "^6.0.0",
+    "@types/passport-google-oauth20": "^2.0.17",
+    "amqp-connection-manager": "^5.0.0",
+    "amqplib": "^0.10.9",
+    "axios": "^1.13.2",
+    "bcrypt": "^6.0.0",
+    "bson": "^6.10.4",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.1",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
+    "pg": "^8.16.3",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.26"
+  },
+  "optionalDependencies": {
+    "ioredis": "^5.8.2"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.18.0",
+    "@nestjs/cli": "^11.0.0",
+    "@nestjs/schematics": "^11.0.0",
+    "@nestjs/testing": "^11.0.1",
+    "@types/express": "^5.0.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.18.4",
+    "@types/pg": "^8.15.5",
+    "@types/supertest": "^6.0.2",
+    "concurrently": "^9.2.1",
+    "dotenv": "^17.2.3",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.2",
+    "globals": "^16.0.0",
+    "jest": "^30.0.0",
+    "mongodb": "^6.20.0",
+    "prettier": "^3.4.2",
+    "source-map-support": "^0.5.21",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.5",
+    "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
+    "ts-proto": "^2.7.7",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": ".",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/apps/",
+      "<rootDir>/libs/"
+    ],
+    "moduleNameMapper": {
+      "^@app/shared(|/.*)$": "<rootDir>/libs/shared/src/$1"
+    }
+  }
+}

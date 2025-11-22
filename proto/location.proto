@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package location;
+
+service LocationService {
+  rpc GetCoordinates (CoordinatesRequest) returns (CoordinatesResponse);
+  rpc GetDistance (DistanceRequest) returns (DistanceResponse);
+}
+
+message CoordinatesRequest {
+  string location = 1;
+}
+
+message CoordinatesResponse {
+  double lat = 1;
+  double lng = 2;
+}
+
+message DistanceRequest {
+  string origin = 1;
+  string destination = 2;
+}
+
+message DistanceResponse {
+  string distance_text = 1;
+  int32 distance_value = 2;
+  string duration_text = 3;
+  int32 duration_value = 4;
+}

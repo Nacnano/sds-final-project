@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shrine-db-pvc
+  namespace: microservices
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shrine-db
+  namespace: microservices
+  labels:
+    app: shrine-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shrine-db
+  template:
+    metadata:
+      labels:
+        app: shrine-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: shrine_service
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: microservices-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: microservices-secrets
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: shrine-db-storage
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '250m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+      volumes:
+        - name: shrine-db-storage
+          persistentVolumeClaim:
+            claimName: shrine-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shrine-db
+  namespace: microservices
+spec:
+  selector:
+    app: shrine-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: ClusterIP

@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wishing-db-pvc
+  namespace: microservices
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wishing-db
+  namespace: microservices
+  labels:
+    app: wishing-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wishing-db
+  template:
+    metadata:
+      labels:
+        app: wishing-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: wishing_service
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: microservices-secrets
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: microservices-secrets
+              key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: wishing-db-storage
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: wishing-db-storage
+        persistentVolumeClaim:
+          claimName: wishing-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wishing-db
+  namespace: microservices
+spec:
+  selector:
+    app: wishing-db
+  ports:
+  - port: 5432
+    targetPort: 5432
+  type: ClusterIP

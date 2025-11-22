@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+package rating;
+
+service RatingService {
+  rpc UpsertRating (UpsertRatingRequest) returns (RatingResponse);
+  rpc GetShrineRatings (GetShrineRatingsRequest) returns (ShrineRatingsResponse);
+  rpc GetUserRatings (GetUserRatingsRequest) returns (UserRatingsResponse);
+  rpc GetShrineStats (GetShrineStatsRequest) returns (ShrineStatsResponse);
+  rpc GetMultipleShrineStats (MultipleShrineStatsRequest) returns (MultipleShrineStatsResponse);
+  rpc DeleteRating (DeleteRatingRequest) returns (DeleteRatingResponse);
+}
+
+message UpsertRatingRequest {
+  string userId = 1;
+  string shrineId = 2;
+  int32 rating = 3;
+  optional string review = 4;
+  optional bool isAnonymous = 5;
+}
+
+message RatingResponse {
+  string id = 1;
+  string userId = 2;
+  string shrineId = 3;
+  int32 rating = 4;
+  optional string review = 5;
+  bool isAnonymous = 6;
+  string createdAt = 7;
+  string updatedAt = 8;
+}
+
+message GetShrineRatingsRequest {
+  string shrineId = 1;
+  optional string sortBy = 2;
+  optional int32 page = 3;
+  optional int32 limit = 4;
+}
+
+message RatingItem {
+  string id = 1;
+  string userId = 2;
+  optional string userName = 3;
+  optional string userAvatar = 4;
+  int32 rating = 5;
+  optional string review = 6;
+  bool isAnonymous = 7;
+  string createdAt = 8;
+}
+
+message ShrineRatingsResponse {
+  repeated RatingItem ratings = 1;
+  double averageRating = 2;
+  int32 totalReviews = 3;
+  int32 total = 4;
+  int32 page = 5;
+  int32 totalPages = 6;
+}
+
+message GetUserRatingsRequest {
+  string userId = 1;
+  optional int32 page = 2;
+  optional int32 limit = 3;
+}
+
+message UserRatingItem {
+  string id = 1;
+  string shrineId = 2;
+  string shrineName = 3;
+  string shrineProvince = 4;
+  int32 rating = 5;
+  optional string review = 6;
+  string createdAt = 7;
+}
+
+message UserRatingsResponse {
+  repeated UserRatingItem ratings = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 totalPages = 4;
+}
+
+message GetShrineStatsRequest {
+  string shrineId = 1;
+}
+
+message RatingDistribution {
+  int32 five = 1;
+  int32 four = 2;
+  int32 three = 3;
+  int32 two = 4;
+  int32 one = 5;
+}
+
+message ShrineStatsResponse {
+  string shrineId = 1;
+  double averageRating = 2;
+  int32 totalReviews = 3;
+  RatingDistribution ratingDistribution = 4;
+}
+
+message MultipleShrineStatsRequest {
+  repeated string shrineIds = 1;
+}
+
+message ShrineStatItem {
+  string shrineId = 1;
+  double averageRating = 2;
+  int32 totalReviews = 3;
+}
+
+message MultipleShrineStatsResponse {
+  repeated ShrineStatItem stats = 1;
+}
+
+message DeleteRatingRequest {
+  string id = 1;
+  string userId = 2;
+}
+
+message DeleteRatingResponse {
+  bool success = 1;
+  string message = 2;
+}

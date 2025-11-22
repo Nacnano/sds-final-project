@@ -1,0 +1,63 @@
+@startuml make_wish_sequence
+title Use Case 3 — Making a Wish
+
+actor User
+participant "Browser / Frontend" as Frontend
+participant "API Gateway" as APIGW
+participant "User Service (Auth)" as AuthService
+participant "Shrine Service" as ShrineService
+participant "Wishing Service" as WishingService
+database "Wishing DB" as WishingDB
+participant "Message Broker / Events" as Broker
+
+== Search & Open Shrine Page ==
+User -> Frontend: Search "ศาลพระพรหม เอราวัณ" / filter by province
+Frontend -> APIGW: GET /shrines?query=... or /shrines?province=...
+APIGW -> ShrineService: GET /shrines?query=...
+note right of ShrineService: Compose shrine details
+ShrineService -> WishingService: GET /wishes?shrineId={id}&visibility=public&limit=5
+WishingService -> WishingDB: SELECT recent public wishes
+WishingDB --> WishingService: recent public wishes
+WishingService --> ShrineService: recent public wishes
+ShrineService --> APIGW: shrine details + recent wishes
+APIGW --> Frontend: 200 OK (shrine page data)
+Frontend --> User: Render shrine page (location, history, photos, instructions, recent wishes)
+
+== Make a Wish (happy path) ==
+User -> Frontend: Click "Make a Wish"
+Frontend -> Frontend: Show wish form (text, visibility: public|private)
+User -> Frontend: Submit wish (text, visibility=public/private)
+Frontend -> APIGW: POST /shrines/{id}/wishes {text, visibility} + Auth token
+APIGW -> AuthService: Validate token / Get user profile
+AuthService --> APIGW: 200 OK + userId
+APIGW -> WishingService: POST /wishes {shrineId, userId, text, visibility}
+WishingService -> WishingDB: INSERT wish (shrineId, userId, text, visibility, createdAt)
+WishingDB --> WishingService: 201 Created + wishId
+alt if visibility = public
+    WishingService -> Broker: publish event "wish.created" {wishId, shrineId, userId, text (summary)}
+    note right: Consumers (analytics, notifications)
+end
+WishingService --> APIGW: 201 Created {wishId}
+APIGW --> Frontend: 201 Created (success)
+Frontend -> Frontend: Show success confirmation
+
+== Update shrine page to show new public wish ==
+opt If frontend auto-updates
+    Frontend -> APIGW: GET /shrines/{id}/wishes?limit=5
+    APIGW -> WishingService: GET /wishes?shrineId={id}&visibility=public
+    WishingService -> WishingDB: SELECT recent public wishes
+    WishingDB --> WishingService: updated list
+    WishingService --> APIGW: updated list
+    APIGW --> Frontend: updated list
+    Frontend --> User: Render updated recent wishes (includes new public wish)
+end
+
+== Unauthenticated user tries to make a wish ==
+User -> Frontend: Submit wish (no token)
+Frontend -> APIGW: POST /shrines/{id}/wishes (no token)
+APIGW -> AuthService: Validate token (missing)
+AuthService --> APIGW: 401 Unauthorized
+APIGW --> Frontend: 401 -> Frontend shows login modal / redirect to login
+Frontend -> User: Prompt to log in (or continue as guest if supported)
+
+@enduml

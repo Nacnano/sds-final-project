@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/microservices-app/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/microservices-app/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/microservices-app",
+  "projects": {
+    "api-gateway": {
+      "type": "application",
+      "root": "apps/api-gateway",
+      "entryFile": "main",
+      "sourceRoot": "apps/api-gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/api-gateway/tsconfig.app.json"
+      }
+    },
+    "rating-service": {
+      "type": "application",
+      "root": "apps/rating-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/rating-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/rating-service/tsconfig.app.json"
+      }
+    },
+    "location-service": {
+      "type": "application",
+      "root": "apps/location-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/location-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/location-service/tsconfig.app.json"
+      }
+    },
+    "shared": {
+      "type": "library",
+      "root": "libs/shared",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared/tsconfig.lib.json"
+      }
+    },
+    "shrine-discovery-service": {
+      "type": "application",
+      "root": "apps/shrine-discovery-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/shrine-discovery-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/shrine-discovery-service/tsconfig.app.json"
+      }
+    },
+    "shrine-service": {
+      "type": "application",
+      "root": "apps/shrine-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/shrine-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/shrine-service/tsconfig.app.json"
+      }
+    },
+    "technique-service": {
+      "type": "application",
+      "root": "apps/technique-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/technique-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/technique-service/tsconfig.app.json"
+      }
+    },
+    "user-service": {
+      "type": "application",
+      "root": "apps/user-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/user-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/user-service/tsconfig.app.json"
+      }
+    },
+    "wishing-service": {
+      "type": "application",
+      "root": "apps/wishing-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/wishing-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/wishing-service/tsconfig.app.json"
+      }
+    }
+  }
+}

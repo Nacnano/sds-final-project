@@ -1,0 +1,90 @@
+@startuml class_diagram_shrine_controller
+title Shrine Service — ShrineController (UML class diagram)
+' UML class diagram for the ShrineController component (normal UML view)
+' Shows controller, service, repository, DTOs, entities and value objects
+
+package "Shrine Service (NestJS + TypeORM)" {
+  class ShrineController {
+    +create(dto: CreateShrineDto): Promise<ShrineEntity>
+    +update(id: string, dto: UpdateShrineDto): Promise<ShrineEntity>
+    +list(q: ListShrinesDto): Promise<ShrineEntity[]>
+    +get(id: string): Promise<ShrineEntity | undefined>
+  }
+
+  class ShrineService {
+    +create(dto: CreateShrineDto): Promise<ShrineEntity>
+    +update(id: string, dto: UpdateShrineDto): Promise<ShrineEntity>
+    +list(q: ListShrinesDto): Promise<ShrineEntity[]>
+    +get(id: string): Promise<ShrineEntity | undefined>
+  }
+
+  interface ShrineRepository {
+    +save(entity: ShrineEntity): Promise<ShrineEntity>
+    +find(query: any): Promise<ShrineEntity[]>
+    +findOne(id: string): Promise<ShrineEntity | undefined>
+  }
+
+  class ShrineEntity {
+    -id: string
+    -name: string
+    -description: string
+    -location: GeoPoint
+    -media: MediaMetadata[]
+    -createdAt: Date
+    -updatedAt: Date
+  }
+
+  class ShrineEventPublisher {
+    +publish(eventName: string, payload: any): Promise<void>
+  }
+
+  class CreateShrineDto <<DTO>> {
+    +name: string
+    +description?: string
+    +location: GeoPoint
+    +media?: MediaMetadata[]
+  }
+
+  class UpdateShrineDto <<DTO>> {
+    +name?: string
+    +description?: string
+    +location?: GeoPoint
+    +media?: MediaMetadata[]
+  }
+
+  class ListShrinesDto <<DTO>> {
+    +limit?: number
+    +offset?: number
+    +near?: GeoPoint
+    +tags?: string[]
+  }
+
+  class MediaMetadata <<ValueObject>> {
+    +url: string
+    +type: string
+    +width?: number
+    +height?: number
+  }
+
+  class GeoPoint <<ValueObject>> {
+    +latitude: number
+    +longitude: number
+  }
+}
+
+' Relationships
+ShrineController --> ShrineService : calls / delegates to
+ShrineService --> ShrineRepository : uses
+ShrineService --> ShrineEventPublisher : publishes to
+ShrineRepository ..> ShrineEntity : persists / maps to
+
+' Composition / containment (entity owns value objects)
+ShrineEntity *-- MediaMetadata
+ShrineEntity *-- GeoPoint
+
+' DTO usages (controller accepts DTOs)
+ShrineController ..> CreateShrineDto : request body
+ShrineController ..> UpdateShrineDto : request body
+ShrineController ..> ListShrinesDto : query params
+
+@enduml
