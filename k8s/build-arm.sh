@@ -15,7 +15,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Configuration
-REGISTRY="192.168.1.10:5000"  # Change this to your master node IP
+REGISTRY="192.168.0.103:5000"  # Change this to your master node IP
 PLATFORM="linux/arm/v7"        # Raspberry Pi 3 B+ architecture
 TAG="latest"
 

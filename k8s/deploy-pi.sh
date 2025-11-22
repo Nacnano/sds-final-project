@@ -3,7 +3,7 @@
 # Deploy to Raspberry Pi Kubernetes Cluster
 # This script updates image references for local registry
 
-REGISTRY="${REGISTRY:-192.168.1.10:5000}"
+REGISTRY="${REGISTRY:-192.168.0.103:5000}"
 
 echo "=========================================="
 echo "Deploying to Raspberry Pi Cluster"

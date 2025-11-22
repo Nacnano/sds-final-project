@@ -1,7 +1,7 @@
 # Deploy to Raspberry Pi Kubernetes Cluster
 # This script updates image references for local registry
 
-$REGISTRY = if ($env:REGISTRY) { $env:REGISTRY } else { "192.168.1.10:5000" }
+$REGISTRY = if ($env:REGISTRY) { $env:REGISTRY } else { "192.168.0.103:5000" }
 
 Write-Host "==========================================" -ForegroundColor Green
 Write-Host "Deploying to Raspberry Pi Cluster" -ForegroundColor Green
