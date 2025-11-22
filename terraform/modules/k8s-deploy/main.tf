@@ -1,6 +1,28 @@
 # K8s Deployment Module - Deploy services to existing cluster
 
+resource "null_resource" "verify_cluster" {
+  provisioner "local-exec" {
+    command = <<-EOT
+      echo '=== Verifying cluster connectivity ==='
+      if [ ! -f "$HOME/.kube/config" ]; then
+        echo "Error: kubeconfig not found at $HOME/.kube/config"
+        exit 1
+      fi
+      
+      # Update kubeconfig to use correct master IP
+      sed -i "s|server: https://127.0.0.1:6443|server: https://${var.master_ip}:6443|g" $HOME/.kube/config
+      
+      export KUBECONFIG=$HOME/.kube/config
+      kubectl cluster-info || { echo "Error: Cannot connect to cluster"; exit 1; }
+      echo '✓ Cluster is accessible'
+    EOT
+    interpreter = ["bash", "-c"]
+  }
+}
+
 resource "null_resource" "deploy_namespace" {
+  depends_on = [null_resource.verify_cluster]
+
   provisioner "local-exec" {
     command = <<-EOT
       echo '=== Creating namespace ==='
