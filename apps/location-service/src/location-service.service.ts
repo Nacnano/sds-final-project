@@ -1,104 +1,137 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Client, GeocodeResponse, DistanceMatrixResponse } from '@googlemaps/google-maps-services-js';
-import { ConfigService } from '@nestjs/config';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
+import {
+  findLocationByName,
+  calculateDistance,
+  formatDistance,
+  estimateDuration,
+  MOCK_LOCATIONS,
+} from './mock-location.database';
 
 @Injectable()
 export class LocationService {
-  private readonly client = new Client({});
-  private readonly apiKey: string;
   private readonly logger = new Logger(LocationService.name);
 
-  constructor(private readonly configService: ConfigService) {
-    const key = this.configService.get<string>('GOOGLE_MAPS_API_KEY');
-    if (!key) {
-      throw new Error('Missing GOOGLE_MAPS_API_KEY in environment');
-    }
-    this.apiKey = key;
+  constructor() {
+    this.logger.log(
+      `Location Service initialized with ${MOCK_LOCATIONS.length} mock locations`,
+    );
   }
 
   async getCoordinates(address: string) {
-    this.logger.log(`Attempting to geocode address: "${address}"`);
-    try {
-      const response = await this.client.geocode({
-        params: {
-          address,
-          key: this.apiKey,
-        },
-      });
+    this.logger.log(`Searching for coordinates of: "${address}"`);
 
-      this.logger.debug(`Geocode API response status: ${response.data.status}`);
-      
-      if (!response.data.results || response.data.results.length === 0) {
-        this.logger.warn(`No coordinates found for address: ${address}`);
-        throw new RpcException({
-          code: status.NOT_FOUND,
-          message: 'No coordinates found for the given address',
-        });
-      }
+    const location = findLocationByName(address);
 
-      const location = response.data.results[0].geometry.location;
-      this.logger.log(`Successfully geocoded "${address}" to lat: ${location.lat}, lng: ${location.lng}`);
-      return location;
-    } catch (error) {
-      this.logger.error(`Error getting coordinates for "${address}":`, error.message, error.response?.data);
-      if (error instanceof RpcException) {
-        throw error;
-      }
+    if (!location) {
+      this.logger.warn(`No coordinates found for address: ${address}`);
       throw new RpcException({
-        code: status.INTERNAL,
-        message: 'Failed to get coordinates from Google Maps API',
-      }); 
+        code: status.NOT_FOUND,
+        message: `No coordinates found for "${address}". Available locations: ${MOCK_LOCATIONS.slice(
+          0,
+          5,
+        )
+          .map((l) => l.name)
+          .join(', ')}...`,
+      });
     }
+
+    // Log if the matched location name differs from input (fuzzy match)
+    const normalizedInput = address.toLowerCase().trim();
+    const normalizedMatch = location.name.toLowerCase();
+    const isExactMatch = normalizedInput === normalizedMatch;
+
+    if (!isExactMatch) {
+      const isAliasMatch = location.aliases?.some(
+        (alias) => alias.toLowerCase() === normalizedInput,
+      );
+
+      if (!isAliasMatch) {
+        this.logger.log(
+          `Fuzzy matched "${address}" to "${location.name}" (possible misspelling corrected)`,
+        );
+      }
+    }
+
+    this.logger.log(
+      `Found coordinates for "${address}" -> ${location.name}: lat: ${location.lat}, lng: ${location.lng}`,
+    );
+    return {
+      lat: location.lat,
+      lng: location.lng,
+    };
   }
 
   async getDistance(origin: string, destination: string) {
-    try {
-      const res = await this.client.distancematrix({
-        params: {
-          origins: [origin],
-          destinations: [destination],
-          key: this.apiKey,
-        },
-      });
-      this.logger.debug(JSON.stringify(res.data, null, 2));
-      if (!res.data.rows?.[0]?.elements?.[0] || res.data.rows[0].elements[0].status === 'ZERO_RESULTS') {
-        this.logger.warn(`No route found between ${origin} and ${destination}`);
-        throw new RpcException({
-          code: status.NOT_FOUND,
-          message: 'No route found between the given locations',
-        });
-      }
+    this.logger.log(
+      `Calculating distance from "${origin}" to "${destination}"`,
+    );
 
-      const element = res.data.rows[0].elements[0];
-      this.logger.debug('Route element:', JSON.stringify(element, null, 2));
-      
-      if (element.status !== 'OK') {
-        throw new RpcException({
-          code: status.FAILED_PRECONDITION,
-          message: `Route calculation failed: ${element.status}`,
-        });
-      }
+    const originLocation = findLocationByName(origin);
+    const destLocation = findLocationByName(destination);
 
-      const result = {
-        distanceText: element.distance.text,
-        distanceValue: element.distance.value,
-        durationText: element.duration.text,
-        durationValue: element.duration.value,
-      };
-      
-      this.logger.debug('Returning result:', JSON.stringify(result, null, 2));
-      return result;
-    } catch (error) {
-      this.logger.error(`Error getting distance between ${origin} and ${destination}: ${error.message}`);
-      if (error instanceof RpcException) {
-        throw error;
-      }
+    if (!originLocation) {
+      this.logger.warn(`Origin location not found: ${origin}`);
       throw new RpcException({
-        code: status.INTERNAL,
-        message: 'Failed to get distance from Google Maps API',
+        code: status.NOT_FOUND,
+        message: `Origin location "${origin}" not found in database`,
       });
     }
+
+    if (!destLocation) {
+      this.logger.warn(`Destination location not found: ${destination}`);
+      throw new RpcException({
+        code: status.NOT_FOUND,
+        message: `Destination location "${destination}" not found in database`,
+      });
+    }
+
+    // Log fuzzy matches
+    if (origin.toLowerCase().trim() !== originLocation.name.toLowerCase()) {
+      const isAliasMatch = originLocation.aliases?.some(
+        (alias) => alias.toLowerCase() === origin.toLowerCase().trim(),
+      );
+      if (!isAliasMatch) {
+        this.logger.log(
+          `Fuzzy matched origin "${origin}" to "${originLocation.name}"`,
+        );
+      }
+    }
+
+    if (destination.toLowerCase().trim() !== destLocation.name.toLowerCase()) {
+      const isAliasMatch = destLocation.aliases?.some(
+        (alias) => alias.toLowerCase() === destination.toLowerCase().trim(),
+      );
+      if (!isAliasMatch) {
+        this.logger.log(
+          `Fuzzy matched destination "${destination}" to "${destLocation.name}"`,
+        );
+      }
+    }
+
+    // Calculate distance using Haversine formula
+    const distanceInMeters = calculateDistance(
+      originLocation.lat,
+      originLocation.lng,
+      destLocation.lat,
+      destLocation.lng,
+    );
+
+    const distanceText = formatDistance(distanceInMeters);
+    const duration = estimateDuration(distanceInMeters);
+
+    const result = {
+      distanceText: distanceText,
+      distanceValue: Math.round(distanceInMeters),
+      durationText: duration.text,
+      durationValue: duration.value,
+    };
+
+    this.logger.log(
+      `Distance calculated: ${originLocation.name} -> ${destLocation.name} = ${distanceText} (${duration.text})`,
+    );
+
+    return result;
   }
 }

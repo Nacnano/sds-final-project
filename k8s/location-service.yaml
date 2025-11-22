@@ -32,11 +32,6 @@ spec:
                 configMapKeyRef:
                   name: microservices-config
                   key: LOCATION_GRPC_PORT
-            - name: GOOGLE_MAPS_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: microservices-secrets
-                  key: GOOGLE_MAPS_API_KEY
           resources:
             requests:
               memory: '256Mi'

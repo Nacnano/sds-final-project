@@ -303,7 +303,7 @@ Client → API Gateway (Container 1)
        ↓
        → Shrine Service (Container 2) → PostgreSQL
        ↓
-       → Location Service (Container 3) → Google Maps API
+       → Location Service (Container 3) → Mock Location Database
        ↓
        → Back to API Gateway
        ↓

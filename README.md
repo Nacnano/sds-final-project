@@ -53,7 +53,7 @@ The platform provides:
 
 - 🗺️ **Location-based shrine discovery** with GPS integration
 - 📍 **Comprehensive shrine information** with descriptions and locations
-- 🌐 **Interactive map interface** powered by Google Maps
+- 🌐 **Interactive map interface** with location coordinates
 - 🏛️ **Cultural and historical context** for each shrine
 
 ---
@@ -69,7 +69,7 @@ In Thailand, shrines and temples are important cultural and spiritual centers. H
 
 **สาย.mu** solves these problems by creating a centralized platform that provides:
 
-- Accurate shrine locations with Google Maps integration
+- Accurate shrine locations with coordinate-based mapping
 - Historical background and cultural significance
 - Location-based discovery to find nearby shrines
 - Easy-to-use web interface for exploring Thailand's sacred sites
@@ -107,10 +107,10 @@ In Thailand, shrines and temples are important cultural and spiritual centers. H
 2. Browses all shrines or filters by province/category
 3. Views shrine details including:
    - Name and description
-   - Location on Google Maps
+   - Location with coordinates (latitude/longitude)
    - Historical background and cultural significance
    - Category (love, career, wealth, health, spiritual)
-4. Can get directions via Google Maps integration
+4. Can view shrine locations and calculate distances
 
 ### Use Case 2: Discover Nearby Shrines 📍
 
@@ -122,7 +122,7 @@ In Thailand, shrines and temples are important cultural and spiritual centers. H
 2. Platform displays shrines within their specified radius
 3. Results show distance and basic information
 4. User selects a shrine to view full details
-5. Can navigate to the shrine using Google Maps
+5. Can view distance and estimated travel time
 
 ---
 
@@ -133,7 +133,7 @@ In Thailand, shrines and temples are important cultural and spiritual centers. H
 #### Shrine Management
 
 - ✅ Create, read, update, delete (CRUD) shrine listings
-- ✅ Location mapping with Google Maps API
+- ✅ Location mapping with coordinate-based system
 - ✅ Cultural and historical descriptions
 - ✅ Category-based organization (love, career, wealth, health, spiritual)
 
@@ -615,16 +615,16 @@ The project uses **NestJS CLI in monorepo mode** to manage multiple applications
 
 ### 8. Location Service (Port 5007)
 
-**Role**: Location-based features and Google Maps integration
+**Role**: Location-based features with mock database
 
 **Features**:
 
-- Geocoding and reverse geocoding
-- Distance calculation
-- Nearby shrine search
-- Google Maps API integration
+- Coordinate lookup from mock location database
+- Distance calculation using Haversine formula
+- Support for common Thai locations and shrines
+- Duration estimation based on distance
 
-**Technologies**: Google Maps Services JS
+**Technologies**: In-memory mock database with 20+ Thai locations
 
 ---
 

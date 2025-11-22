@@ -147,7 +147,7 @@ Open browser: http://localhost:5173
 
 1. **Dashboard** - View all shrines
 2. **Shrine Details** - Click on a shrine card
-3. **Map View** - See shrine locations on Google Maps
+3. **Map View** - See shrine locations with coordinates
 4. **Search** - Filter shrines by name or category
 
 ## 6. Load Testing

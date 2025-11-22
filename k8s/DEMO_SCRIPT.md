@@ -161,7 +161,7 @@ curl -X POST http://192.168.1.10:30000/shrines \
 >
 > 1. **API Gateway** receives POST request
 > 2. **Shrine Service** validates and stores data
-> 3. **Location Service** (Container 3) resolves coordinates via Google Maps API
+> 3. **Location Service** (Container 3) resolves coordinates via mock location database
 > 4. Response returns to client
 >
 > This shows at least 3 containers servicing one request! ✓"

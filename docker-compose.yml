@@ -61,7 +61,6 @@ services:
     environment:
       NODE_ENV: production
       LOCATION_SERVICE_PORT: 5006
-      GOOGLE_MAPS_API_KEY: AIzaSyCuYN8_SFYZOxwaXDEjKhsLGuwbn_wLFas
     ports:
       - "5006:5006"
     networks:
