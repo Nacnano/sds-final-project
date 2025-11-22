@@ -54,3 +54,9 @@ variable "node_labels" {
     "project"   = "sai-mu"
   }
 }
+
+variable "k8s_manifests_path" {
+  description = "Path to Kubernetes manifests directory"
+  type        = string
+  default     = "../k8s"
+}

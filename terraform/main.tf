@@ -32,6 +32,17 @@ module "workers" {
   depends_on = [module.master]
 }
 
+# K8s Services Deployment Module (Optional - deploy services after cluster is ready)
+module "k8s_deploy" {
+  source = "./modules/k8s-deploy"
+
+  master_ip          = var.master_ip
+  registry_port      = var.registry_port
+  k8s_manifests_path = var.k8s_manifests_path
+
+  depends_on = [module.workers]
+}
+
 # Output cluster information
 output "cluster_info" {
   value = {
@@ -47,30 +58,35 @@ output "cluster_info" {
 output "next_steps" {
   value = <<-EOT
     ============================================
-    Kubernetes Cluster Setup Complete!
+    Kubernetes Cluster & Services Deployed!
     ============================================
     
     Master Node: ${var.master_ip}
     Worker Nodes: ${join(", ", var.worker_ips)}
     Docker Registry: ${var.master_ip}:${var.registry_port}
     
-    Next Steps:
-    1. Verify cluster:
+    Application URLs:
+    - Frontend:    http://${var.master_ip}:30002
+    - API Gateway: http://${var.master_ip}:30000/shrines
+    
+    Monitoring Commands:
+    1. Check cluster:
        kubectl get nodes
     
-    2. Build ARM images:
-       cd k8s
-       .\build-arm.ps1
-    
-    3. Deploy application:
-       .\deploy-pi.ps1
-    
-    4. Check deployment:
+    2. Check pods:
        kubectl get pods -n microservices
     
-    5. Access application:
-       http://${var.master_ip}:30000/shrines (API)
-       http://${var.master_ip}:30002 (Frontend)
+    3. Watch deployment:
+       kubectl get pods -n microservices -w
+    
+    4. View logs:
+       kubectl logs -n microservices -l app=api-gateway
+    
+    5. Check services:
+       kubectl get svc -n microservices
+    
+    Redeploy services only:
+       terraform apply -target="module.k8s_deploy"
     
     For troubleshooting, see terraform/README.md
     ============================================
