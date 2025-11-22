@@ -37,7 +37,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-primary-600 to-orange-500 text-white">
+      <div className="bg-linear-to-r from-primary-600 to-orange-500 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <h1 className="text-4xl font-bold mb-4">Welcome! 🙏</h1>
           <p className="text-xl text-primary-100">
@@ -53,7 +53,9 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Total Shrines</p>
-                <p className="text-3xl font-bold text-primary-600">{allShrines.length}</p>
+                <p className="text-3xl font-bold text-primary-600">
+                  {allShrines.length}
+                </p>
               </div>
               <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
                 <span className="text-2xl">⛩️</span>
@@ -65,8 +67,13 @@ const Dashboard: React.FC = () => {
         {/* Featured Shrines */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Featured Shrines</h2>
-            <Link to="/shrines" className="text-primary-600 hover:text-primary-700 font-medium">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Featured Shrines
+            </h2>
+            <Link
+              to="/shrines"
+              className="text-primary-600 hover:text-primary-700 font-medium"
+            >
               View all →
             </Link>
           </div>
@@ -74,14 +81,27 @@ const Dashboard: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {shrines && shrines.length > 0 ? (
               shrines.map((shrine) => (
-                <Link to={`/shrines/${shrine.id}`} key={shrine.id} className="card hover:scale-105 transition-transform">
+                <Link
+                  to={`/shrines/${shrine.id}`}
+                  key={shrine.id}
+                  className="card hover:scale-105 transition-transform"
+                >
                   <img
-                    src={getShrineImageUrl(shrine.id, 400, 250, shrine.imageUrl)}
+                    src={getShrineImageUrl(
+                      shrine.id,
+                      400,
+                      250,
+                      shrine.imageUrl,
+                    )}
                     alt={shrine.name}
                     className="w-full h-48 object-cover rounded-lg mb-4"
                   />
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">{shrine.name}</h3>
-                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">{shrine.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                    {shrine.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    {shrine.description}
+                  </p>
                   <p className="text-xs text-gray-500">📍 {shrine.location}</p>
                 </Link>
               ))
