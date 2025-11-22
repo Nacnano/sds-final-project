@@ -1,0 +1,25 @@
+# Example Terraform Variables Configuration
+# Copy this file to terraform.tfvars and customize for your setup
+
+# Master node IP address (your laptop/desktop)
+master_ip = "192.168.1.10"
+
+# Worker node IPs (Raspberry Pis)
+# Must have at least 4 workers for course requirements
+worker_ips = ["192.168.1.11", "192.168.1.12", "192.168.1.13", "192.168.1.14"]
+
+# SSH configuration
+ssh_user             = "ubuntu"
+ssh_private_key_path = "~/.ssh/id_rsa"  # Windows: C:/Users/YourName/.ssh/id_rsa
+
+# Cluster configuration
+cluster_name  = "sai-mu-cluster"
+k3s_version   = "v1.28.5+k3s1"  # Stable K3s version
+registry_port = 5000            # Docker registry port
+
+# Optional: Install Kubernetes dashboard
+install_dashboard = false
+
+# Note: Ensure all IPs are reachable and SSH keys are set up
+# Test connectivity: ping 192.168.1.11
+# Test SSH: ssh ubuntu@192.168.1.11

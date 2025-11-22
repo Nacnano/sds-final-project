@@ -8,20 +8,26 @@ This is your master index for deploying the สาย.mu shrine discovery platfo
 
 **New to the project?** Start with these in order:
 
-1. **[RASPBERRY_PI_COMPLETE_GUIDE.md](./RASPBERRY_PI_COMPLETE_GUIDE.md)** ⭐ **MAIN GUIDE**
+1. **[terraform/QUICKSTART.md](./terraform/QUICKSTART.md)** 🚀 **FASTEST START**
+   - Automated cluster setup with Terraform
+   - 10-minute deployment
+   - Infrastructure as Code
+   - **RECOMMENDED FOR QUICK SETUP**
+
+2. **[RASPBERRY_PI_COMPLETE_GUIDE.md](./RASPBERRY_PI_COMPLETE_GUIDE.md)** ⭐ **MAIN GUIDE**
    - Complete setup from hardware to deployment
    - Covers ALL course requirements
    - Step-by-step instructions
    - Troubleshooting section
-   - **READ THIS FIRST**
+   - **READ THIS FIRST** (if doing manual setup)
 
-2. **[FILES_TO_FIX_SUMMARY.md](./FILES_TO_FIX_SUMMARY.md)**
+3. **[FILES_TO_FIX_SUMMARY.md](./FILES_TO_FIX_SUMMARY.md)**
    - What needs to be changed
    - Which files to update
    - Quick modification scripts
    - Deployment workflow
 
-3. **[DEMO_DAY_QUICK_REFERENCE.md](./DEMO_DAY_QUICK_REFERENCE.md)**
+4. **[DEMO_DAY_QUICK_REFERENCE.md](./DEMO_DAY_QUICK_REFERENCE.md)**
    - Day-of-demo checklist
    - Commands to run
    - What to say
@@ -35,11 +41,26 @@ This is your master index for deploying the สาย.mu shrine discovery platfo
 
 | Document                           | Purpose                       | When to Read                  |
 | ---------------------------------- | ----------------------------- | ----------------------------- |
-| **RASPBERRY_PI_COMPLETE_GUIDE.md** | Comprehensive setup guide     | Before starting setup         |
+| **terraform/QUICKSTART.md**        | Automated Terraform setup     | For fastest cluster setup     |
+| **terraform/SETUP_GUIDE.md**       | Detailed Terraform guide      | Terraform troubleshooting     |
+| **RASPBERRY_PI_COMPLETE_GUIDE.md** | Comprehensive setup guide     | Manual setup or understanding |
 | **FILES_TO_FIX_SUMMARY.md**        | List of files needing changes | Before building images        |
 | **DEMO_DAY_QUICK_REFERENCE.md**    | Demo day cheat sheet          | Day before and during demo    |
 | **README.md**                      | Project overview              | Understanding the application |
 | **DEVELOPMENT.md**                 | Local development guide       | For local testing             |
+
+### Infrastructure as Code (NEW! 🚀)
+
+| Document                      | Purpose                          |
+| ----------------------------- | -------------------------------- |
+| **terraform/README.md**       | Terraform overview               |
+| **terraform/QUICKSTART.md**   | 10-minute automated setup        |
+| **terraform/SETUP_GUIDE.md**  | Complete Terraform guide         |
+| **terraform/main.tf**         | Main Terraform configuration     |
+| **terraform/variables.tf**    | Variable definitions             |
+| **terraform/modules/master/** | Master node configuration module |
+| **terraform/modules/worker/** | Worker node configuration module |
+| **terraform/scripts/**        | Setup scripts                    |
 
 ### Existing Documentation (Reference)
 
