@@ -8,9 +8,9 @@ output "worker_ips" {
   value       = var.worker_ips
 }
 
-output "registry_url" {
-  description = "Docker registry URL"
-  value       = "${var.master_ip}:${var.registry_port}"
+output "docker_hub_images" {
+  description = "Docker Hub image repository"
+  value       = "nacnano/sds-final-project-*"
 }
 
 output "cluster_endpoint" {

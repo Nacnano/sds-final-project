@@ -38,7 +38,7 @@ resource "null_resource" "deploy_location_service" {
   depends_on = [null_resource.deploy_databases]
 
   provisioner "local-exec" {
-    command     = "bash -c \"echo '=== Deploying location service ===' && export KUBECONFIG=$HOME/.kube/config && REGISTRY='${var.master_ip}:${var.registry_port}' && sed -e 's|image: location-service:latest|image: '$REGISTRY'/location-service:latest|g' -e 's|imagePullPolicy: Never|imagePullPolicy: Always|g' ${var.k8s_manifests_path}/location-service.yaml | kubectl apply -f - && kubectl wait --for=condition=ready pod -l app=location-service -n microservices --timeout=300s || true\""
+    command     = "bash -c \"echo '=== Deploying location service ===' && export KUBECONFIG=$HOME/.kube/config && sed -e 's|image: location-service:latest|image: nacnano/sds-final-project-location-service:latest|g' -e 's|imagePullPolicy: Never|imagePullPolicy: Always|g' ${var.k8s_manifests_path}/location-service.yaml | kubectl apply -f - && kubectl wait --for=condition=ready pod -l app=location-service -n microservices --timeout=300s || true\""
     interpreter = ["bash", "-c"]
   }
 }
@@ -47,7 +47,7 @@ resource "null_resource" "deploy_shrine_service" {
   depends_on = [null_resource.deploy_location_service]
 
   provisioner "local-exec" {
-    command     = "bash -c \"echo '=== Deploying shrine service ===' && export KUBECONFIG=$HOME/.kube/config && REGISTRY='${var.master_ip}:${var.registry_port}' && sed -e 's|image: shrine-service:latest|image: '$REGISTRY'/shrine-service:latest|g' -e 's|imagePullPolicy: Never|imagePullPolicy: Always|g' ${var.k8s_manifests_path}/shrine-service.yaml | kubectl apply -f - && kubectl wait --for=condition=ready pod -l app=shrine-service -n microservices --timeout=300s || true\""
+    command     = "bash -c \"echo '=== Deploying shrine service ===' && export KUBECONFIG=$HOME/.kube/config && sed -e 's|image: shrine-service:latest|image: nacnano/sds-final-project-shrine-service:latest|g' -e 's|imagePullPolicy: Never|imagePullPolicy: Always|g' ${var.k8s_manifests_path}/shrine-service.yaml | kubectl apply -f - && kubectl wait --for=condition=ready pod -l app=shrine-service -n microservices --timeout=300s || true\""
     interpreter = ["bash", "-c"]
   }
 }
@@ -56,7 +56,7 @@ resource "null_resource" "deploy_api_gateway" {
   depends_on = [null_resource.deploy_shrine_service]
 
   provisioner "local-exec" {
-    command     = "bash -c \"echo '=== Deploying API gateway and frontend ===' && export KUBECONFIG=$HOME/.kube/config && REGISTRY='${var.master_ip}:${var.registry_port}' && sed -e 's|image: api-gateway:latest|image: '$REGISTRY'/api-gateway:latest|g' -e 's|image: frontend:latest|image: '$REGISTRY'/frontend:latest|g' -e 's|imagePullPolicy: Never|imagePullPolicy: Always|g' ${var.k8s_manifests_path}/api-gateway.yaml | kubectl apply -f -\""
+    command     = "bash -c \"echo '=== Deploying API gateway and frontend ===' && export KUBECONFIG=$HOME/.kube/config && sed -e 's|image: api-gateway:latest|image: nacnano/sds-final-project-api-gateway:latest|g' -e 's|image: frontend:latest|image: nacnano/sds-final-project-frontend:latest|g' -e 's|imagePullPolicy: Never|imagePullPolicy: Always|g' ${var.k8s_manifests_path}/api-gateway.yaml | kubectl apply -f -\""
     interpreter = ["bash", "-c"]
   }
 }

@@ -14,7 +14,6 @@ module "k8s_deploy" {
   source = "./modules/k8s-deploy"
 
   master_ip          = var.master_ip
-  registry_port      = var.registry_port
   k8s_manifests_path = var.k8s_manifests_path
 }
 
@@ -22,7 +21,7 @@ module "k8s_deploy" {
 output "deployment_info" {
   value = {
     master_ip    = var.master_ip
-    registry_url = "${var.master_ip}:${var.registry_port}"
+    docker_hub   = "nacnano/sds-final-project-*"
     frontend_url = "http://${var.master_ip}:30002"
     api_url      = "http://${var.master_ip}:30000"
     status       = module.k8s_deploy.deployment_status
@@ -37,7 +36,7 @@ output "next_steps" {
     ============================================
     
     Master Node: ${var.master_ip}
-    Docker Registry: ${var.master_ip}:${var.registry_port}
+    Docker Images: Docker Hub (nacnano/sds-final-project-*)
     
     Application URLs:
     - Frontend:    http://${var.master_ip}:30002

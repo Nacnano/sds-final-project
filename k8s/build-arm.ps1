@@ -1,4 +1,4 @@
-# Build ARM-compatible Docker images for Raspberry Pi deployment
+﻿# Build ARM-compatible Docker images for Raspberry Pi deployment
 # Run this on your Windows development machine
 
 Write-Host "======================================" -ForegroundColor Green
@@ -7,13 +7,21 @@ Write-Host "======================================" -ForegroundColor Green
 Write-Host ""
 
 # Configuration
-$REGISTRY = "192.168.0.103:5000"  # Change this to your master node IP
+$DOCKER_HUB_USER = "nacnano"      # Docker Hub username
 $PLATFORM = "linux/arm/v7"        # Raspberry Pi 3 B+ architecture
 $TAG = "latest"
 
-Write-Host "Using registry: $REGISTRY" -ForegroundColor Yellow
+Write-Host "Using Docker Hub user: $DOCKER_HUB_USER" -ForegroundColor Yellow
 Write-Host "Building for platform: $PLATFORM" -ForegroundColor Yellow
 Write-Host ""
+
+# Check if logged in to Docker Hub
+Write-Host "Checking Docker Hub login..." -ForegroundColor Yellow
+docker login
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Error: Not logged in to Docker Hub" -ForegroundColor Red
+    exit 1
+}
 
 # Check if buildx is available
 try {
@@ -44,10 +52,13 @@ function Build-And-Push {
     
     Write-Host "Building $Service..." -ForegroundColor Green
     
+    # Build with cache and push to Docker Hub
     docker buildx build `
         --platform $PLATFORM `
         --file $Dockerfile `
-        --tag "$REGISTRY/${Service}:$TAG" `
+        --tag "${DOCKER_HUB_USER}/sds-final-project-${Service}:${TAG}" `
+        --cache-from "type=registry,ref=${DOCKER_HUB_USER}/sds-final-project-${Service}:buildcache" `
+        --cache-to "type=registry,ref=${DOCKER_HUB_USER}/sds-final-project-${Service}:buildcache,mode=max" `
         --push `
         $Context
     
@@ -75,29 +86,18 @@ Build-And-Push -Service "frontend" -Dockerfile "frontend/Dockerfile" -Context "f
 
 # Verify images in registry
 Write-Host "======================================" -ForegroundColor Green
-Write-Host "Verifying images in registry..." -ForegroundColor Green
-Write-Host "======================================" -ForegroundColor Green
-
-try {
-    $response = Invoke-RestMethod -Uri "http://${REGISTRY}/v2/_catalog"
-    $response | ConvertTo-Json
-} catch {
-    Write-Host "Warning: Could not verify registry contents" -ForegroundColor Yellow
-    Write-Host "Make sure registry is running: docker run -d -p 5000:5000 --restart=always --name registry registry:2" -ForegroundColor Yellow
-}
-
-Write-Host ""
-Write-Host "======================================" -ForegroundColor Green
-Write-Host "✓ All images built successfully!" -ForegroundColor Green
+Write-Host "✓ All ARM images built successfully!" -ForegroundColor Green
 Write-Host "======================================" -ForegroundColor Green
 Write-Host ""
-Write-Host "Images available at:" -ForegroundColor Cyan
-Write-Host "  - ${REGISTRY}/shrine-service:${TAG}"
-Write-Host "  - ${REGISTRY}/location-service:${TAG}"
-Write-Host "  - ${REGISTRY}/api-gateway:${TAG}"
-Write-Host "  - ${REGISTRY}/frontend:${TAG}"
+Write-Host "Images available on Docker Hub:" -ForegroundColor Cyan
+Write-Host "  - ${DOCKER_HUB_USER}/sds-final-project-shrine-service:${TAG}"
+Write-Host "  - ${DOCKER_HUB_USER}/sds-final-project-location-service:${TAG}"
+Write-Host "  - ${DOCKER_HUB_USER}/sds-final-project-api-gateway:${TAG}"
+Write-Host "  - ${DOCKER_HUB_USER}/sds-final-project-frontend:${TAG}"
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Yellow
-Write-Host "  1. Verify images on Raspberry Pi: docker pull ${REGISTRY}/shrine-service:${TAG}"
-Write-Host "  2. Deploy to Kubernetes: kubectl apply -f k8s/"
+Write-Host "  1. These ARM images can be pulled on Raspberry Pi"
+Write-Host "  2. Deploy to Kubernetes: cd terraform && terraform apply"
+Write-Host "  3. Images will be automatically pulled from Docker Hub"
 Write-Host ""
+

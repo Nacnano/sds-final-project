@@ -6,12 +6,6 @@ variable "master_ip" {
   type        = string
 }
 
-variable "registry_port" {
-  description = "Docker registry port"
-  type        = number
-  default     = 5000
-}
-
 variable "k8s_manifests_path" {
   description = "Path to Kubernetes manifests directory"
   type        = string
