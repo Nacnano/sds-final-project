@@ -1,9 +1,9 @@
-# Testing Guide - Rating & Discovery Services
+# Testing Guide - Shrine Discovery Platform
 
 ## Prerequisites
 
 1. All Docker containers running
-2. All databases initialized
+2. Database initialized with seed data
 3. API Gateway running on port 3000
 
 ## 1. Start All Services
@@ -13,288 +13,266 @@
 pnpm run start:all
 
 # Or individually:
-pnpm run start:rating-service:dev
-pnpm run start:shrine-discovery-service:dev
-pnpm run start:api-gateway:dev
+pnpm run start:dev:shrine
+pnpm run start:dev:location
+pnpm run start:dev:gateway
+pnpm run start:dev:frontend
 ```
 
-## 2. Test Rating Service
+## 2. Test Shrine Service
 
-### 2.1 Create a Rating (JWT Required)
+### 2.1 Get All Shrines
 
-```bash
-POST http://localhost:3000/ratings
-Headers:
-  Authorization: Bearer YOUR_JWT_TOKEN
-  Content-Type: application/json
-Body:
-{
-  "shrineId": "shrine-uuid-here",
-  "rating": 5,
-  "review": "Amazing shrine! Very peaceful and beautiful."
-}
+```http
+GET http://localhost:3000/shrines
 ```
 
-### 2.2 Update a Rating (Upsert)
+**Expected Response:**
 
-```bash
-POST http://localhost:3000/ratings
-Headers:
-  Authorization: Bearer YOUR_JWT_TOKEN
-Body:
-{
-  "shrineId": "same-shrine-uuid",
-  "rating": 4,
-  "review": "Updated review: Still great!"
-}
-```
-
-### 2.3 Get Shrine Ratings (Public)
-
-```bash
-GET http://localhost:3000/ratings/shrine/{shrineId}?page=1&limit=10
-```
-
-### 2.4 Get User Ratings (JWT Required)
-
-```bash
-GET http://localhost:3000/ratings/user/{userId}?page=1&limit=10
-Headers:
-  Authorization: Bearer YOUR_JWT_TOKEN
-```
-
-### 2.5 Get Shrine Statistics (Public)
-
-```bash
-GET http://localhost:3000/ratings/shrine/{shrineId}/stats
-
-Expected Response:
-{
-  "shrineId": "...",
-  "totalRatings": 42,
-  "averageRating": 4.5,
-  "ratingDistribution": {
-    "5": 20,
-    "4": 15,
-    "3": 5,
-    "2": 1,
-    "1": 1
+```json
+[
+  {
+    "id": "6731a1b2c4d5e6f7a8b9c0d1",
+    "name": "Erawan Shrine",
+    "description": "Famous Hindu shrine...",
+    "location": "494 Ratchadamri Rd, Pathum Wan, Bangkok 10330",
+    "category": "career",
+    "lat": 13.7447,
+    "lng": 100.5396,
+    "imageUrl": "https://..."
   }
+]
+```
+
+### 2.2 Get Shrine by ID
+
+```http
+GET http://localhost:3000/shrines/{shrineId}
+```
+
+### 2.3 Create Shrine
+
+```http
+POST http://localhost:3000/shrines
+Content-Type: application/json
+
+{
+  "name": "Test Shrine",
+  "description": "A test shrine for development",
+  "location": "Test Location, Bangkok",
+  "category": "spiritual",
+  "lat": 13.7563,
+  "lng": 100.5018
 }
 ```
 
-### 2.6 Delete Rating (JWT Required)
+### 2.4 Update Shrine
 
-```bash
-DELETE http://localhost:3000/ratings/{ratingId}
-Headers:
-  Authorization: Bearer YOUR_JWT_TOKEN
+```http
+PUT http://localhost:3000/shrines/{shrineId}
+Content-Type: application/json
+
+{
+  "name": "Updated Shrine Name",
+  "description": "Updated description"
+}
 ```
 
-## 3. Test Shrine Discovery Enhancements
+### 2.5 Delete Shrine
 
-### 3.1 Advanced Search
+```http
+DELETE http://localhost:3000/shrines/{shrineId}
+```
 
-```bash
-# Search by query
-GET http://localhost:3000/shrine-discovery/search?query=วัดพระแก้ว
+## 3. Test Location Service
 
-# Search by category
-GET http://localhost:3000/shrine-discovery/search?category=love&page=1&limit=10
+### 3.1 Find Nearby Shrines
 
-# Search by location
-GET http://localhost:3000/shrine-discovery/search?latitude=13.7563&longitude=100.5018&maxDistance=10
+```http
+POST http://localhost:3000/location/nearby
+Content-Type: application/json
 
-# Search with rating filter
-GET http://localhost:3000/shrine-discovery/search?minRating=4.0&sortBy=rating
+{
+  "lat": 13.7563,
+  "lng": 100.5018,
+  "radius": 5000
+}
+```
 
-# Combined search
-GET http://localhost:3000/shrine-discovery/search?category=wealth&province=Bangkok&latitude=13.7563&longitude=100.5018&maxDistance=20&minRating=4.0&sortBy=distance&page=1&limit=10
+**Expected Response:**
 
-Expected Response:
+```json
 {
   "shrines": [
     {
-      "shrineId": "...",
-      "shrineName": "...",
-      "description": "...",
-      "category": "wealth",
-      "province": "Bangkok",
-      "latitude": 13.7563,
-      "longitude": 100.5018,
-      "score": 85.5,
-      "distance": 2.3,
-      "averageRating": 4.5,
-      "totalRatings": 100,
-      "wishCount": 500
-    }
-  ],
-  "total": 42,
-  "page": 1,
-  "limit": 10
-}
-```
-
-### 3.2 Personalized Recommendations
-
-```bash
-# Basic recommendation
-GET http://localhost:3000/shrine-discovery/recommend-personalized?userId=user-uuid-here
-
-# With location
-GET http://localhost:3000/shrine-discovery/recommend-personalized?userId=user-uuid&userLatitude=13.7563&userLongitude=100.5018
-
-# With distance limit
-GET http://localhost:3000/shrine-discovery/recommend-personalized?userId=user-uuid&userLatitude=13.7563&userLongitude=100.5018&maxDistance=15&limit=5
-
-Expected Response:
-{
-  "shrines": [
-    {
-      "shrineId": "...",
-      "shrineName": "...",
-      "score": 92.5,
-      "distance": 3.2,
-      "averageRating": 4.8,
-      "category": "love", // User's preferred category
-      "totalRatings": 200,
-      "wishCount": 800
+      "id": "6731a1b2c4d5e6f7a8b9c0d1",
+      "name": "Erawan Shrine",
+      "distance": 1250.5
     }
   ]
 }
-
-# Verify scoring:
-# Total Score = (Category Match × 0.40) + (Rating × 0.30) + (Popularity × 0.20) + (Distance × 0.10)
 ```
 
-### 3.3 Aggregated Statistics
+### 3.2 Calculate Distance
 
-```bash
-GET http://localhost:3000/shrine-discovery/stats/{shrineId}
+```http
+POST http://localhost:3000/location/distance
+Content-Type: application/json
 
-Expected Response:
 {
-  "shrineId": "...",
-  "totalRatings": 150,
-  "averageRating": 4.5,
-  "ratingDistribution": {
-    "5": 80,
-    "4": 50,
-    "3": 15,
-    "2": 3,
-    "1": 2
-  },
-  "totalWishes": 800,
-  "recentWishes": 120,
-  "topWishCategories": [
-    { "category": "love", "count": 300 },
-    { "category": "wealth", "count": 250 },
-    { "category": "health", "count": 150 }
-  ]
+  "lat1": 13.7563,
+  "lng1": 100.5018,
+  "lat2": 13.7447,
+  "lng2": 100.5396
 }
 ```
 
-## 4. Verification Checklist
+## 4. Database Seeding
 
-### Rating Service
+### 4.1 Seed Shrine Data
 
-- [ ] Can create new ratings
-- [ ] Can update existing ratings (upsert works)
-- [ ] Rating validation works (1-5 only)
-- [ ] Review length validation works (500 chars max)
-- [ ] Pagination works correctly
-- [ ] Statistics calculation is accurate
-- [ ] JWT authentication enforced on protected endpoints
-- [ ] Users can only modify their own ratings
-- [ ] Admins can view all ratings
-- [ ] Delete works correctly
-
-### Discovery Service
-
-- [ ] Text search works (name, description)
-- [ ] Category filtering works
-- [ ] Province filtering works
-- [ ] Location-based search with distance works
-- [ ] Rating filter works correctly
-- [ ] Multiple sort options work (rating, distance, popularity)
-- [ ] Pagination works
-- [ ] Personalized recommendations return relevant shrines
-- [ ] Scoring algorithm weights correctly:
-  - [ ] Category match: 40%
-  - [ ] Average rating: 30%
-  - [ ] Popularity: 20%
-  - [ ] Distance: 10%
-- [ ] User preferences considered in recommendations
-- [ ] Aggregated statistics from both services are correct
-
-### Integration
-
-- [ ] API Gateway routes to correct services
-- [ ] gRPC communication works between services
-- [ ] Database connections stable
-- [ ] Error handling works correctly
-- [ ] Response times acceptable (<500ms for most queries)
-
-## 5. Performance Testing
-
-### Load Test Recommendations
-
-```bash
-# Use k6 for load testing
-k6 run testing/scripts/k6-load-test.js
+```powershell
+pnpm db:seed:shrines
 ```
 
-### Expected Performance
+This will populate the shrine database with 10 sample shrines in Bangkok.
 
-- Rating CRUD: < 100ms
-- Search queries: < 300ms
-- Recommendations: < 500ms (includes multiple service calls)
-- Statistics: < 200ms
+## 5. Frontend Testing
 
-## 6. Troubleshooting
+### 5.1 Access Frontend
 
-### Service Won't Start
+Open browser: http://localhost:5173
 
-1. Check if database containers are running: `docker ps`
-2. Check logs: `docker logs rating-db` or `pnpm run start:rating-service:dev`
-3. Verify environment variables
-4. Check port conflicts
+### 5.2 Test Features
 
-### gRPC Connection Errors
+1. **Dashboard** - View all shrines
+2. **Shrine Details** - Click on a shrine card
+3. **Map View** - See shrine locations on Google Maps
+4. **Search** - Filter shrines by name or category
 
-1. Verify service URLs in environment variables
-2. Check if services are listening on correct ports
-3. Verify proto files are identical across services
+## 6. Load Testing
 
-### Database Connection Errors
+### 6.1 Start Load Testing Infrastructure
 
-1. Check database credentials in environment variables
-2. Verify database is initialized
-3. Check network connectivity between containers
+```powershell
+cd testing
+docker-compose up -d
+```
 
-### Authentication Errors
+### 6.2 Access Grafana Dashboard
 
-1. Verify JWT token is valid
-2. Check Authorization header format: `Bearer <token>`
-3. Verify user exists in user-service
+Open browser: http://localhost:4000
 
-## 7. Postman Collection
+- Username: admin
+- Password: admin
 
-Import the collections from:
+### 6.3 Run Custom Load Test
 
-- `tools/postman/rating-service.postman.json` (if created)
-- `tools/postman/shrine-discovery.postman.json`
+```powershell
+# Set test parameters
+$env:VUS = "100"
+$env:DURATION = "2m"
+$env:BASE_URL = "http://localhost:3000"
 
-## 8. Next Steps After Testing
+# Start test
+docker-compose up --scale k6-node=3 -d
+```
 
-1. Fix any bugs found during testing
-2. Compile proto files with protoc
-3. Replace temporary interfaces with compiled types
-4. Add monitoring and logging
-5. Deploy to staging environment
-6. Performance optimization if needed
-7. Documentation updates
+## 7. Common Issues
 
----
+### Database Connection Error
 
-**Note:** Replace placeholder UUIDs and JWT tokens with actual values from your system.
+**Problem:** Services can't connect to database
+
+**Solution:**
+
+```powershell
+# Check if database is running
+docker ps | findstr shrine-db
+
+# Restart database
+docker-compose restart shrine-db
+
+# Check logs
+docker-compose logs shrine-db
+```
+
+### Port Already in Use
+
+**Problem:** Port 3000 or 5173 already in use
+
+**Solution:**
+
+```powershell
+# Find process using port
+netstat -ano | findstr :3000
+
+# Kill the process or restart Docker
+docker-compose down
+pnpm start:all
+```
+
+### Seed Data Not Loading
+
+**Problem:** Database is empty after seeding
+
+**Solution:**
+
+```powershell
+# Check database connection
+docker exec -it shrine-db psql -U postgres -d shrine_service -c "SELECT COUNT(*) FROM shrines;"
+
+# Re-run seed script
+pnpm db:seed:shrines
+```
+
+## 8. API Testing with Postman
+
+Import the Postman collection from `tools/postman/` for ready-to-use API requests.
+
+## 9. Health Checks
+
+### 9.1 Check API Gateway
+
+```http
+GET http://localhost:3000/health
+```
+
+### 9.2 Check Services
+
+```powershell
+# Shrine Service
+curl http://localhost:5001
+
+# Location Service
+curl http://localhost:5007
+```
+
+## 10. Docker Status
+
+### 10.1 View Running Containers
+
+```powershell
+docker-compose ps
+```
+
+### 10.2 View Logs
+
+```powershell
+# All services
+docker-compose logs -f
+
+# Specific service
+docker-compose logs -f api-gateway
+docker-compose logs -f shrine-service
+```
+
+## Summary
+
+- **API Gateway**: http://localhost:3000
+- **Frontend**: http://localhost:5173
+- **Shrine DB**: localhost:5432
+- **Grafana**: http://localhost:4000
+- **pgAdmin**: http://localhost:5050
+
+For more details, see README.md and DEVELOPMENT.md.

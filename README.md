@@ -1,10 +1,10 @@
-# สาย.mu - Thailand's Premier Shrine Blessing Platform
+# สาย.mu - Thailand's Shrine Discovery Platform
 
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-<p align="center">A microservices platform connecting people with blessings from Thailand's leading shrines</p>
+<p align="center">A microservices platform for discovering and exploring Thailand's sacred shrines and temples</p>
 
 <div align="center">
 
@@ -13,7 +13,6 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
 ![pnpm](https://img.shields.io/badge/pnpm-8.15.0-orange?logo=pnpm)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?logo=postgresql)
-![MongoDB](https://img.shields.io/badge/MongoDB-6-green?logo=mongodb)
 ![Docker](https://img.shields.io/badge/Docker-latest-blue?logo=docker)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-ready-blue?logo=kubernetes)
 ![gRPC](https://img.shields.io/badge/gRPC-latest-brightgreen?logo=grpc)
@@ -48,83 +47,70 @@
 
 ## 📝 Description
 
-**สาย.mu** (sai.mu) is a comprehensive digital platform that aggregates blessings and prayers from Thailand's premier shrines and temples. Built with a modern microservices architecture, it enables both locals and tourists to discover spiritual locations, make wishes, share blessing techniques, and connect with Thailand's rich cultural and religious heritage—all from the convenience of a web or mobile interface.
+**สาย.mu** (sai.mu) is a digital platform for discovering Thailand's sacred shrines and temples. Built with a modern microservices architecture, it enables both locals and tourists to explore spiritual locations and connect with Thailand's rich cultural and religious heritage.
 
 The platform provides:
 
 - 🗺️ **Location-based shrine discovery** with GPS integration
-- 🙏 **Digital wish-making system** with privacy controls
-- 📚 **Blessing technique sharing** and community knowledge
-- ⭐ **Ratings and reviews** for shrines and temples
-- 🔐 **Secure authentication** with Google OAuth support
-- 🌐 **Multilingual support** (Thai/English)
+- 📍 **Comprehensive shrine information** with descriptions and locations
+- 🌐 **Interactive map interface** powered by Google Maps
+- 🏛️ **Cultural and historical context** for each shrine
 
 ---
 
 ## 🎯 Problem Statement
 
-In Thailand, shrines and temples are important cultural and spiritual centers where people go to pray, make wishes, or donate to good causes. However, several challenges exist:
+In Thailand, shrines and temples are important cultural and spiritual centers. However, several challenges exist:
 
 1. **Information Fragmentation**: Shrine and temple information is scattered across various sources, making it difficult to find accurate details.
-2. **Outdated Data**: Many online resources contain outdated information about locations, opening hours, and rituals.
+2. **Outdated Data**: Many online resources contain outdated information about locations and descriptions.
 3. **Accessibility**: Both locals and tourists struggle to locate nearby shrines or understand their cultural significance.
 4. **Language Barriers**: Limited multilingual resources make it challenging for international visitors.
-5. **Ritual Guidance**: Lack of clear instructions on how to properly perform rituals and make wishes.
 
-**สาย.mu** solves these problems by creating a centralized, up-to-date platform that provides:
+**สาย.mu** solves these problems by creating a centralized platform that provides:
 
 - Accurate shrine locations with Google Maps integration
 - Historical background and cultural significance
-- Step-by-step ritual instructions
-- Community-driven content (wishes, techniques, reviews)
-- Admin portal for shrine owners to manage their listings
+- Location-based discovery to find nearby shrines
+- Easy-to-use web interface for exploring Thailand's sacred sites
 
 ---
 
 ## 👥 Target Customers
 
 1. **Thai Locals** 🇹🇭
-   - Seeking nearby shrines for wish-making
+   - Seeking nearby shrines to visit
    - Wanting to explore new spiritual locations
-   - Interested in sharing blessing techniques
+   - Learning about cultural heritage sites
 
 2. **Tourists** ✈️
    - Domestic and international visitors
    - Exploring Thailand's cultural landmarks
-   - Learning about religious practices
+   - Discovering sacred sites during travels
 
-3. **Shrine/Temple Administrators** 🏛️
-   - Seeking visibility for their locations
-   - Managing shrine information and events
-   - Posting announcements and updates
-
-4. **Cultural Researchers** 📚
-   - Studying religious practices in Thailand
-   - Analyzing wish patterns and trends
-   - Documenting traditional techniques
+3. **Cultural Researchers** 📚
+   - Studying religious sites in Thailand
+   - Documenting temple and shrine locations
+   - Understanding geographical distribution of sacred sites
 
 ---
 
 ## 💡 Key Use Cases
 
-### Use Case 1: Making a Wish 🙏
+### Use Case 1: Browse Shrines 🏛️
 
-**Scenario**: A user wants to make a wish at "ศาลพระพรหม เอราวัณ" (Erawan Shrine)
+**Scenario**: A user wants to explore shrines in Bangkok
 
 **Flow**:
 
-1. User logs in with email/password or Google OAuth
-2. Searches for "ศาลพระพรหม เอราวัณ" or filters by Bangkok province
-3. Views dedicated shrine page with:
+1. User visits the platform
+2. Browses all shrines or filters by province/category
+3. Views shrine details including:
+   - Name and description
    - Location on Google Maps
-   - Historical background
-   - Step-by-step wish-making instructions
-   - Photos and media
-   - Recent public wishes from other users
-4. Clicks "Make a Wish" button
-5. Writes their wish with optional category (love, career, wealth, health)
-6. Chooses visibility: **Public** (shared with community) or **Private** (personal)
-7. Submits and tracks wish in "My Spiritual Journey"
+   - Historical background and cultural significance
+   - Category (love, career, wealth, health, spiritual)
+4. Can get directions via Google Maps integration
 
 ### Use Case 2: Discover Nearby Shrines 📍
 
@@ -133,49 +119,10 @@ In Thailand, shrines and temples are important cultural and spiritual centers wh
 **Flow**:
 
 1. User allows location access in browser
-2. Platform displays shrines within 10 km radius
-3. User can adjust search radius (5km, 10km, 20km, 50km)
-4. Results sorted by:
-   - **Distance** (nearest first)
-   - **Popularity** (most visited)
-   - **Rating** (highest rated)
-   - **Category** (love, career, wealth, health)
-5. User selects a shrine and views details
-6. Can get directions via Google Maps integration
-
-### Use Case 3: Contributing Information 📝
-
-**Scenario**: A shrine administrator wants to update their shrine's information
-
-**Flow**:
-
-1. Administrator registers/logs in with shrine owner credentials
-2. Claims or creates shrine listing
-3. Edits shrine details:
-   - Name, description, location
-   - Upload photos and media
-   - Add historical background
-   - Update opening hours
-   - Add blessing techniques
-4. Posts announcements about upcoming festivals or events
-5. Views analytics (visitor count, ratings, wish statistics)
-
-### Use Case 4: Get AI-Powered Recommendations 🤖
-
-**Scenario**: A user wants personalized shrine recommendations
-
-**Flow**:
-
-1. User navigates to "Discover & Explore" section
-2. Enters wish text: "I want to find true love"
-3. System categorizes wish automatically (category: love)
-4. Provides recommendations based on:
-   - Wish category matching
-   - User's location
-   - Shrine ratings and popularity
-   - Distance from user
-5. Displays ranked list with match scores
-6. User can visit recommended shrine page
+2. Platform displays shrines within their specified radius
+3. Results show distance and basic information
+4. User selects a shrine to view full details
+5. Can navigate to the shrine using Google Maps
 
 ---
 
@@ -183,53 +130,19 @@ In Thailand, shrines and temples are important cultural and spiritual centers wh
 
 ### Functional Requirements
 
-#### User Management
-
-- ✅ User registration and authentication (email/password)
-- ✅ OAuth integration (Google)
-- ✅ Role-based access control (User, Admin, Shrine Owner)
-- ✅ JWT token-based authentication
-- ✅ Profile management
-
 #### Shrine Management
 
 - ✅ Create, read, update, delete (CRUD) shrine listings
 - ✅ Location mapping with Google Maps API
-- ✅ Photo and media upload
-- ✅ Historical background and descriptions
-- ✅ Admin portal for shrine owners
+- ✅ Cultural and historical descriptions
+- ✅ Category-based organization (love, career, wealth, health, spiritual)
 
 #### Search & Discovery
 
 - ✅ Search by name, province, category
 - ✅ Filter by shrine type and category
 - ✅ Location-based discovery (GPS integration)
-- ✅ Sort by popularity, rating, distance
-- ✅ AI-powered recommendations
-
-#### Wish System
-
-- ✅ Create wishes linked to shrines
-- ✅ Public/private visibility toggle
-- ✅ Wish categorization (love, career, wealth, health, general)
-- ✅ View wish history
-- ✅ Delete wishes
-- ✅ Wish wall display on shrine pages
-
-#### Technique Sharing
-
-- ✅ Share blessing techniques
-- ✅ Add required items/ingredients
-- ✅ Link techniques to specific shrines
-- ✅ Community-driven content
-
-#### Ratings & Reviews
-
-- ✅ Rate shrines (1-5 stars)
-- ✅ Write text reviews
-- ✅ Anonymous rating option
-- ✅ One rating per user per shrine (upsert)
-- ✅ Average rating calculation
+- ✅ Distance calculation from user location
 
 ### Non-Functional Requirements
 
@@ -257,9 +170,6 @@ In Thailand, shrines and temples are important cultural and spiritual centers wh
 #### Security
 
 - 🔒 SSL/TLS encryption (HTTPS)
-- 🔒 Password hashing (bcrypt)
-- 🔒 JWT token expiration
-- 🔒 OAuth 2.0 for third-party authentication
 - 🔒 Input validation and sanitization
 - 🔒 SQL injection prevention (ORM)
 
@@ -273,13 +183,13 @@ The platform follows a **microservices architecture** pattern with:
 
 - **API Gateway**: Single entry point for all client requests (REST API)
 - **gRPC Microservices**: Internal service-to-service communication
-- **Multiple Databases**: PostgreSQL and MongoDB for different data types
+- **PostgreSQL Database**: For shrine data storage
 - **Message Queue**: RabbitMQ for asynchronous communication
-- **Shared Libraries**: Common utilities, guards, and interfaces
+- **Shared Libraries**: Common utilities and interfaces
 
 ### Architecture Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                         Clients                              │
 │              (Web Browser, Mobile Apps)                      │
@@ -290,25 +200,24 @@ The platform follows a **microservices architecture** pattern with:
 │                      API Gateway                             │
 │                    (Port 3000)                               │
 │              - REST API Endpoints                            │
-│              - JWT Authentication                            │
 │              - Request Validation                            │
 │              - Response Transformation                       │
-└─────┬────────┬────────┬────────┬────────┬────────┬──────────┘
-      │        │        │        │        │        │
-      │ gRPC   │ gRPC   │ gRPC   │ gRPC   │ gRPC   │ gRPC
-      ▼        ▼        ▼        ▼        ▼        ▼
-┌──────────┬──────────┬──────────┬──────────┬──────────┬──────────┐
-│  User    │ Shrine   │ Wishing  │Technique │Discovery │ Rating   │
-│ Service  │ Service  │ Service  │ Service  │ Service  │ Service  │
-│(Port     │(Port     │(Port     │(Port     │(Port     │(Port     │
-│ 5005)    │ 5001)    │ 5004)    │ 5002)    │ 5003)    │ 5006)    │
-└────┬─────┴────┬─────┴────┬─────┴────┬─────┴────┬─────┴────┬─────┘
-     │          │          │          │          │          │
-     ▼          ▼          ▼          ▼          ▼          ▼
-┌──────────┬──────────┬──────────┬──────────┬──────────┬──────────┐
-│ User DB  │Shrine DB │Wishing DB│Technique │Discovery │ Rating   │
-│(Postgres)│(Postgres)│(Postgres)│  (Mongo) │  (Mongo) │(Postgres)│
-└──────────┴──────────┴──────────┴──────────┴──────────┴──────────┘
+└─────┬────────┬──────────────────────────────────────────────┘
+      │        │
+      │ gRPC   │ gRPC
+      ▼        ▼
+┌──────────┬──────────┐
+│  Shrine  │ Location │
+│ Service  │ Service  │
+│(Port     │(Port     │
+│ 5001)    │ 5007)    │
+└────┬─────┴──────────┘
+     │
+     ▼
+┌──────────┐
+│Shrine DB │
+│(Postgres)│
+└──────────┘
                               │
                               │ Message Queue
                               ▼
@@ -316,6 +225,17 @@ The platform follows a **microservices architecture** pattern with:
                      │    RabbitMQ     │
                      │   (Port 5672)   │
                      └─────────────────┘
+```
+
+└──────────┴──────────┴──────────┴──────────┴──────────┴──────────┘
+│
+│ Message Queue
+▼
+┌─────────────────┐
+│ RabbitMQ │
+│ (Port 5672) │
+└─────────────────┘
+
 ```
 
 ### NestJS CLI Configuration
@@ -385,115 +305,117 @@ The project uses **NestJS CLI in monorepo mode** to manage multiple applications
 ## 📁 Project Structure
 
 ```
+
 สาย.mu/
-├── apps/                           # Microservice Applications
-│   ├── api-gateway/                    # REST API Gateway (Port 3000)
-│   │   └── src/
-│   │       ├── auth/                   # Authentication endpoints
-│   │       ├── user/                   # User endpoints
-│   │       ├── shrine/                 # Shrine endpoints
-│   │       ├── wishing/                # Wishing endpoints
-│   │       ├── technique/              # Technique endpoints
-│   │       ├── rating/                 # Rating endpoints
-│   │       └── discovery/              # Discovery endpoints
-│   │
-│   ├── user-service/                   # gRPC Service (Port 5005)
-│   ├── shrine-service/                 # gRPC Service (Port 5001)
-│   ├── wishing-service/                # gRPC Service (Port 5004)
-│   ├── technique-service/              # gRPC Service (Port 5002)
-│   ├── shrine-discovery-service/       # gRPC Service (Port 5003)
-│   ├── rating-service/                 # gRPC Service (Port 5006)
-│   └── location-service/               # gRPC Service (Port 5007)
+├── apps/ # Microservice Applications
+│ ├── api-gateway/ # REST API Gateway (Port 3000)
+│ │ └── src/
+│ │ ├── auth/ # Authentication endpoints
+│ │ ├── user/ # User endpoints
+│ │ ├── shrine/ # Shrine endpoints
+│ │ ├── wishing/ # Wishing endpoints
+│ │ ├── technique/ # Technique endpoints
+│ │ ├── rating/ # Rating endpoints
+│ │ └── discovery/ # Discovery endpoints
+│ │
+│ ├── user-service/ # gRPC Service (Port 5005)
+│ ├── shrine-service/ # gRPC Service (Port 5001)
+│ ├── wishing-service/ # gRPC Service (Port 5004)
+│ ├── technique-service/ # gRPC Service (Port 5002)
+│ ├── shrine-discovery-service/ # gRPC Service (Port 5003)
+│ ├── rating-service/ # gRPC Service (Port 5006)
+│ └── location-service/ # gRPC Service (Port 5007)
 │
-├── frontend/                       # React + Vite Frontend
-│   ├── src/
-│   │   ├── components/                 # Reusable UI components
-│   │   ├── pages/                      # Page components
-│   │   │   ├── Dashboard.tsx
-│   │   │   ├── ShrinesHub.tsx
-│   │   │   ├── MyJourney.tsx
-│   │   │   └── Discover.tsx
-│   │   ├── contexts/                   # React Context (Auth)
-│   │   ├── services/                   # API clients
-│   │   └── types/                      # TypeScript types
-│   ├── Dockerfile
-│   └── nginx.conf                      # Production server config
+├── frontend/ # React + Vite Frontend
+│ ├── src/
+│ │ ├── components/ # Reusable UI components
+│ │ ├── pages/ # Page components
+│ │ │ ├── Dashboard.tsx
+│ │ │ ├── ShrinesHub.tsx
+│ │ │ ├── MyJourney.tsx
+│ │ │ └── Discover.tsx
+│ │ ├── contexts/ # React Context (Auth)
+│ │ ├── services/ # API clients
+│ │ └── types/ # TypeScript types
+│ ├── Dockerfile
+│ └── nginx.conf # Production server config
 │
-├── libs/                           # Shared Libraries
-│   └── shared/
-│       └── src/
-│           ├── auth/                   # Authentication
-│           │   ├── jwt-auth.guard.ts
-│           │   ├── jwt.strategy.ts
-│           │   ├── google.strategy.ts
-│           │   ├── roles.guard.ts
-│           │   └── roles.decorator.ts
-│           │
-│           ├── database/               # Database utilities
-│           │   └── base.entity.ts      # Base entity with UUID
-│           │
-│           ├── interfaces/             # Generated gRPC interfaces
-│           │   ├── user.ts
-│           │   ├── shrine.ts
-│           │   ├── wishing.ts
-│           │   ├── technique.ts
-│           │   ├── shrine-discovery.ts
-│           │   ├── rating.ts
-│           │   └── location.ts
-│           │
-│           └── utils/                  # Utilities
-│               ├── haversine.util.ts   # Distance calculation
-│               └── validators/
+├── libs/ # Shared Libraries
+│ └── shared/
+│ └── src/
+│ ├── auth/ # Authentication
+│ │ ├── jwt-auth.guard.ts
+│ │ ├── jwt.strategy.ts
+│ │ ├── google.strategy.ts
+│ │ ├── roles.guard.ts
+│ │ └── roles.decorator.ts
+│ │
+│ ├── database/ # Database utilities
+│ │ └── base.entity.ts # Base entity with UUID
+│ │
+│ ├── interfaces/ # Generated gRPC interfaces
+│ │ ├── user.ts
+│ │ ├── shrine.ts
+│ │ ├── wishing.ts
+│ │ ├── technique.ts
+│ │ ├── shrine-discovery.ts
+│ │ ├── rating.ts
+│ │ └── location.ts
+│ │
+│ └── utils/ # Utilities
+│ ├── haversine.util.ts # Distance calculation
+│ └── validators/
 │
-├── proto/                          # Protocol Buffer Definitions
-│   ├── user.proto
-│   ├── shrine.proto
-│   ├── wishing.proto
-│   ├── technique.proto
-│   ├── shrine-discovery.proto
-│   ├── rating.proto
-│   └── location.proto
+├── proto/ # Protocol Buffer Definitions
+│ ├── user.proto
+│ ├── shrine.proto
+│ ├── wishing.proto
+│ ├── technique.proto
+│ ├── shrine-discovery.proto
+│ ├── rating.proto
+│ └── location.proto
 │
-├── k8s/                            # Kubernetes Manifests
-│   ├── namespace.yaml
-│   ├── configmap.yaml
-│   ├── secrets.yaml
-│   ├── *-db.yaml                       # Database deployments
-│   ├── *-service.yaml                  # Microservice deployments
-│   ├── api-gateway.yaml                # Gateway + Frontend bundle
-│   ├── build.ps1                       # Build Docker images
-│   ├── deploy.ps1                      # Deploy to K8s
-│   └── delete.ps1                      # Clean up K8s resources
+├── k8s/ # Kubernetes Manifests
+│ ├── namespace.yaml
+│ ├── configmap.yaml
+│ ├── secrets.yaml
+│ ├── _-db.yaml # Database deployments
+│ ├── _-service.yaml # Microservice deployments
+│ ├── api-gateway.yaml # Gateway + Frontend bundle
+│ ├── build.ps1 # Build Docker images
+│ ├── deploy.ps1 # Deploy to K8s
+│ └── delete.ps1 # Clean up K8s resources
 │
-├── testing/                        # Load Testing
-│   ├── docker-compose.yaml             # k6 + InfluxDB + Grafana
-│   ├── scripts/
-│   │   ├── k6-load-test.js
-│   │   └── k6-stress-test.js
-│   └── provisioning/                   # Grafana dashboards
+├── testing/ # Load Testing
+│ ├── docker-compose.yaml # k6 + InfluxDB + Grafana
+│ ├── scripts/
+│ │ ├── k6-load-test.js
+│ │ └── k6-stress-test.js
+│ └── provisioning/ # Grafana dashboards
 │
-├── tools/                          # Development Tools
-│   ├── diagram/                        # PlantUML diagrams
-│   ├── postman/                        # API collections
-│   └── scripts/                        # Utility scripts
-│       ├── seed-shrines.js
-│       ├── seed-wishes.js
-│       ├── reset-local.ps1
-│       └── reset-docker.ps1
+├── tools/ # Development Tools
+│ ├── diagram/ # PlantUML diagrams
+│ ├── postman/ # API collections
+│ └── scripts/ # Utility scripts
+│ ├── seed-shrines.js
+│ ├── seed-wishes.js
+│ ├── reset-local.ps1
+│ └── reset-docker.ps1
 │
-├── docker-compose.yml              # Production Docker Compose
-├── docker-compose.override.yml     # Development overrides
-├── nest-cli.json                   # NestJS CLI Configuration
-├── package.json                    # Root dependencies & scripts
-├── pnpm-workspace.yaml             # pnpm workspace config
-├── tsconfig.json                   # TypeScript configuration
-├── .env                            # Environment variables
-├── .nvmrc                          # Node.js version (v20)
-├── DEVELOPMENT.md                  # Development guide
-├── TESTING_GUIDE.md                # Testing guide
-├── DEPLOYMENT_SUMMARY.md           # Deployment guide
-└── README.md                       # This file
-```
+├── docker-compose.yml # Production Docker Compose
+├── docker-compose.override.yml # Development overrides
+├── nest-cli.json # NestJS CLI Configuration
+├── package.json # Root dependencies & scripts
+├── pnpm-workspace.yaml # pnpm workspace config
+├── tsconfig.json # TypeScript configuration
+├── .env # Environment variables
+├── .nvmrc # Node.js version (v20)
+├── DEVELOPMENT.md # Development guide
+├── TESTING_GUIDE.md # Testing guide
+├── DEPLOYMENT_SUMMARY.md # Deployment guide
+└── README.md # This file
+
+````
 
 ---
 
@@ -551,7 +473,7 @@ The project uses **NestJS CLI in monorepo mode** to manage multiple applications
   createdAt: Date,
   updatedAt: Date
 }
-```
+````
 
 ### 3. Shrine Service (Port 5001)
 

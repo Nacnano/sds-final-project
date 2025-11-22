@@ -2,7 +2,7 @@
 
 ## What Was Created
 
-This repo now ships a full Kubernetes-ready stack for the shrine microservices platform, including the high-availability gateway and frontend bundle you've been testing locally.
+This repository includes a Kubernetes-ready deployment for the shrine discovery microservices platform.
 
 ### 1. Kubernetes Manifests (k8s/ directory)
 
@@ -10,29 +10,21 @@ This repo now ships a full Kubernetes-ready stack for the shrine microservices p
 
 - `namespace.yaml` - Creates the 'microservices' namespace
 - `configmap.yaml` - Non-sensitive configuration (URLs, ports, etc.)
-- `secrets.yaml` - Sensitive data (passwords, JWT secrets, OAuth credentials)
+- `secrets.yaml` - Sensitive data (passwords, database credentials)
 
 **Database Deployments:**
 
-- `shrine-db.yaml` - PostgreSQL for Shrine Service with PVC
-- `user-db.yaml` - PostgreSQL for User Service with PVC
-- `wishing-db.yaml` - PostgreSQL for Wishing Service with PVC
-- `rating-db.yaml` - PostgreSQL for Rating Service with PVC
+- `shrine-db.yaml` - PostgreSQL for Shrine Service with persistent volume
 - `rabbitmq.yaml` - RabbitMQ message broker
 
 **Microservice Deployments:**
 
 - `shrine-service.yaml` - Shrine management service (gRPC Port: 5001)
-- `technique-service.yaml` - Technique management service (gRPC Port: 5002)
-- `shrine-discovery-service.yaml` - Shrine discovery service (gRPC Port: 5003)
-- `wishing-service.yaml` - Wishing management service (gRPC Port: 5004)
-- `user-service.yaml` - User authentication service (gRPC Port: 5005)
-- `location-service.yaml` - Location validation service (gRPC Port: 5006)
-- `rating-service.yaml` - Rating and review service (gRPC Port: 5007)
-- `api-gateway.yaml` - **High-availability** gateway bundle:
-  - API Gateway Deployment (3 replicas + PDB + HPA, NodePort: 30000)
-  - Frontend SPA Deployment (2 replicas + PDB + HPA, NodePort: 30002)
-  - Anti-affinity, readiness/liveness probes, and autoscaling targets baked in
+- `location-service.yaml` - Location validation service (gRPC Port: 5007)
+- `api-gateway.yaml` - High-availability gateway with:
+  - API Gateway Deployment (3 replicas + HPA, NodePort: 30000)
+  - Frontend SPA Deployment (2 replicas + HPA, NodePort: 30002)
+  - Readiness/liveness probes and autoscaling
 
 **Management & Tooling:**
 
@@ -40,16 +32,10 @@ This repo now ships a full Kubernetes-ready stack for the shrine microservices p
 
 ### 2. Deployment Scripts
 
-- `build.ps1` - Builds Docker images and tags them for Kubernetes (now includes the frontend image and tags it as `frontend:latest`)
+- `build.ps1` - Builds Docker images for all services
 - `deploy.ps1` - Deploys all services in the correct order
 - `delete.ps1` - Removes all Kubernetes resources
-- `README.md` - Comprehensive guide for deployment and troubleshooting
-
-### 3. Bug Fixes
-
-- Fixed `nest-cli.json` - Missing closing brace after user-service configuration
-- Trimmed unused frontend code so TypeScript builds cleanly inside the Docker image
-- Consolidated the HA demo into the primary `api-gateway.yaml` manifest
+- `README.md` - Comprehensive deployment guide
 
 ## Architecture Overview
 
@@ -62,30 +48,17 @@ This repo now ships a full Kubernetes-ready stack for the shrine microservices p
 │  │  ┌──────────────┐          ┌────────────────────────┐│ │
 │  │  │              │          │    Databases           ││ │
 │  │  │ API Gateway  │◄─────────┤  - shrine-db (PG)     ││ │
-│  │  │  (NodePort   │          │  - user-db (PG)       ││ │
-│  │  │   30000)     │          │  - wishing-db (PG)    ││ │
-│  │  │              │          │  - rating-db (PG)     ││ │
-│  │  └──────┬───────┘          └────────────────────────┘│ │
+│  │  │  (NodePort   │          │  - rabbitmq           ││ │
+│  │  │   30000)     │          └────────────────────────┘│ │
+│  │  └──────┬───────┘                                     │ │
 │  │         │                                             │ │
-│  │    ┌────┴─────────────────────────────┐              │ │
-│  │    │                                  │              │ │
-│  │  ┌─▼──────────┐  ┌──────────────┐ ┌─▼───────────┐  │ │
-│  │  │   Shrine   │  │  Technique   │ │    User     │  │ │
-│  │  │  Service   │  │   Service    │ │   Service   │  │ │
-│  │  │  :5001     │  │   :5002      │ │   :5005     │  │ │
-│  │  └────────────┘  └──────────────┘ └─────────────┘  │ │
-│  │                                                      │ │
-│  │  ┌──────────────┐  ┌──────────────┐                │ │
-│  │  │ Shrine Disc. │  │   Wishing    │                │ │
-│  │  │   Service    │  │   Service    │                │ │
-│  │  │   :5003      │  │   :5004      │                │ │
-│  │  └──────────────┘  └──────────────┘                │ │
-│  │                                                      │ │
-│  │  ┌──────────────┐  ┌──────────────┐                │ │
-│  │  │  Location    │  │   Rating     │                │ │
-│  │  │   Service    │  │   Service    │                │ │
-│  │  │   :5006      │  │   :5007      │                │ │
-│  │  └──────────────┘  └──────────────┘                │ │
+│  │    ┌────┴─────────────────┐                          │ │
+│  │    │                      │                          │ │
+│  │  ┌─▼──────────┐  ┌───────▼──────┐                   │ │
+│  │  │   Shrine   │  │   Location   │                   │ │
+│  │  │  Service   │  │   Service    │                   │ │
+│  │  │  :5001     │  │   :5007      │                   │ │
+│  │  └────────────┘  └──────────────┘                   │ │
 │  │                                                      │ │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌────────────┐│ │
 │  │  │  RabbitMQ    │  │   pgAdmin    │  │ Frontend   ││ │
@@ -98,214 +71,308 @@ This repo now ships a full Kubernetes-ready stack for the shrine microservices p
 
 ## Current Status
 
-### ✅ Completed
+✅ **All services deployed successfully**
 
-1. High-availability manifests merged into `k8s/api-gateway.yaml` (gateway + frontend + PDBs + HPAs)
-2. Frontend Dockerfile added and wired into `k8s/build.ps1`
-3. ConfigMap updated so OAuth flows return to the new NodePort frontend URL
-4. Automated scripts (`build.ps1`, `deploy.ps1`, `delete.ps1`) now cover the entire stack
-5. Docker build passes cleanly for every service, including the SPA
+### Services Running
 
-### ⚠️ Action Required
+1. **shrine-db** - PostgreSQL database
+2. **rabbitmq** - Message broker
+3. **shrine-service** - Core shrine management (1 replica)
+4. **location-service** - Location and distance calculations (1 replica)
+5. **api-gateway** - REST API gateway (3 replicas with HPA)
+6. **frontend** - React SPA (2 replicas with HPA)
+7. **pgadmin** - Database administration tool (1 replica)
 
-- **Secrets:** Update `k8s/secrets.yaml` with real JWT + Google OAuth credentials before sharing the cluster.
-- **Metrics Server:** Install `metrics-server` in your Kubernetes cluster so the HPAs can react to CPU usage (without it, targets show `<unknown>`).
+### Access Points
 
-## Deployment Steps
+- **Frontend**: http://localhost:30002
+- **API Gateway**: http://localhost:30000
+- **pgAdmin**: http://localhost:30080 (admin@example.com / admin)
+- **RabbitMQ Management**: http://localhost:30672 (guest / guest)
 
-Once Kubernetes is running:
+## Quick Start
 
-### Option 1: Automated Deployment (Recommended)
+### Prerequisites
+
+- Docker Desktop with Kubernetes enabled
+- kubectl CLI tool installed
+- PowerShell
+
+### Deploy to Kubernetes
 
 ```powershell
-# Navigate to project directory
-cd c:\Users\Vivobook\github\microservice
+# Navigate to k8s directory
+cd k8s
 
-# Deploy everything
-.\k8s\deploy.ps1
+# Build all Docker images
+.\build.ps1
+
+# Deploy all services
+.\deploy.ps1
+
+# Verify deployment
+kubectl get pods -n microservices
+kubectl get services -n microservices
 ```
 
-### Option 2: Manual Deployment
+### Check Status
 
 ```powershell
-# 1. Create namespace
-kubectl apply -f k8s/namespace.yaml
-
-# 2. Create configuration
-kubectl apply -f k8s/configmap.yaml
-kubectl apply -f k8s/secrets.yaml
-
-# 3. Deploy databases
-kubectl apply -f k8s/shrine-db.yaml
-kubectl apply -f k8s/user-db.yaml
-kubectl apply -f k8s/wishing-db.yaml
-kubectl apply -f k8s/rating-db.yaml
-kubectl apply -f k8s/rabbitmq.yaml
-
-# Wait 30 seconds for databases to start
-Start-Sleep -Seconds 30
-
-# 4. Deploy microservices
-kubectl apply -f k8s/shrine-service.yaml
-kubectl apply -f k8s/user-service.yaml
-kubectl apply -f k8s/technique-service.yaml
-kubectl apply -f k8s/location-service.yaml
-kubectl apply -f k8s/rating-service.yaml
-kubectl apply -f k8s/shrine-discovery-service.yaml
-kubectl apply -f k8s/wishing-service.yaml
-
-# Wait 20 seconds for services
-Start-Sleep -Seconds 20
-
-# 5. Deploy API Gateway + Frontend bundle and pgAdmin
-kubectl apply -f k8s/api-gateway.yaml
-kubectl apply -f k8s/pgadmin.yaml
-```
-
-## Verification
-
-Check deployment status:
-
-```powershell
-# View all resources
-kubectl get all -n microservices
-
-# View pods
+# View all pods
 kubectl get pods -n microservices
 
 # View services
 kubectl get svc -n microservices
 
-# View persistent volume claims
-kubectl get pvc -n microservices
-```
-
-## Accessing Services
-
-Once deployed:
-
-- **API Gateway**: [http://localhost:30000](http://localhost:30000)
-- **Frontend SPA**: [http://localhost:30002](http://localhost:30002)
-- **pgAdmin**: [http://localhost:30080](http://localhost:30080)
-  - Email: `admin@example.com`
-  - Password: `admin`
-
-## Useful Commands
-
-### Logs
-
-```powershell
-# View logs for a specific pod
-kubectl logs -n microservices <pod-name>
-
-# Follow logs
-kubectl logs -n microservices -f <pod-name>
-
-# Logs for all pods of a service
+# Check logs for a specific service
+kubectl logs -n microservices -l app=shrine-service
 kubectl logs -n microservices -l app=api-gateway
 ```
 
-### Debugging
+### Seed Database
 
 ```powershell
-# Describe a pod (shows events and errors)
-kubectl describe pod -n microservices <pod-name>
+# Get the shrine-db pod name
+kubectl get pods -n microservices | findstr shrine-db
 
-# Execute command in a pod
-kubectl exec -n microservices -it <pod-name> -- /bin/sh
+# Copy seed script to pod
+kubectl cp ../tools/scripts/seed-all-databases.js microservices/shrine-db-xxxxx:/tmp/
 
-# Port forward
-kubectl port-forward -n microservices svc/api-gateway 3000:3000
+# Install dependencies and run seed
+kubectl exec -it -n microservices shrine-db-xxxxx -- bash
+npm install pg
+node /tmp/seed-all-databases.js
 ```
 
-### Management
+### Clean Up
 
 ```powershell
-# Restart a deployment
-kubectl rollout restart deployment -n microservices api-gateway
-kubectl rollout restart deployment -n microservices frontend
+# Remove all resources
+cd k8s
+.\delete.ps1
 
-# Scale a deployment
-kubectl scale deployment -n microservices api-gateway --replicas=3
-kubectl scale deployment -n microservices frontend --replicas=2
-```
-
-## Cleanup
-
-To remove all deployed resources:
-
-```powershell
-.\k8s\delete.ps1
-```
-
-Or delete the entire namespace:
-
-```powershell
+# Or manually
 kubectl delete namespace microservices
 ```
 
-## Configuration Details
+## High Availability Features
 
-### Resource Allocation
+### API Gateway
 
-Each service has:
+- **3 replicas** for redundancy
+- **Horizontal Pod Autoscaler (HPA)**: Scales 3-10 replicas based on CPU (70%)
+- **Pod Disruption Budget (PDB)**: Minimum 2 replicas available during updates
+- **Anti-affinity rules**: Pods spread across nodes
+- **Health checks**: Readiness and liveness probes
 
-- **Requests**: 256Mi memory, 250m CPU
-- **Limits**: 512Mi memory, 500m CPU
+### Frontend
 
-### Persistent Storage
-
-Each database has 1Gi persistent volume:
-
-- shrine-db-pvc
-- user-db-pvc
-- wishing-db-pvc
-- rating-db-pvc
-
-### Image Pull Policy
-
-Using `imagePullPolicy: Never` for local Docker images. This means:
-
-- Images must be built locally first
-- No pulling from remote registries
-- Perfect for local development
-
-## Next Steps
-
-1. ✅ Enable Kubernetes in Docker Desktop (see KUBERNETES_SETUP.md)
-2. ✅ Update secrets in `k8s/secrets.yaml`
-3. ✅ Run deployment script: `.\k8s\deploy.ps1`
-4. ✅ Verify deployment: `kubectl get all -n microservices`
-5. ✅ Access API Gateway at [http://localhost:30000](http://localhost:30000)
-6. ✅ Monitor logs: `kubectl logs -n microservices -l app=api-gateway`
+- **2 replicas** for redundancy
+- **HPA**: Scales 2-5 replicas based on CPU (70%)
+- **PDB**: Minimum 1 replica available
+- **nginx server** for efficient static file serving
 
 ## Troubleshooting
 
-See `k8s/README.md` for detailed troubleshooting guide.
+### Pods Not Starting
 
-Common issues:
+```powershell
+# Check pod status
+kubectl get pods -n microservices
 
-- **ImagePullBackOff**: Docker images not built - run `docker-compose build`
-- **CrashLoopBackOff**: Check logs with `kubectl logs`
-- **Pending Pods**: Check events with `kubectl describe pod`
+# Describe pod for details
+kubectl describe pod <pod-name> -n microservices
 
-## Production Considerations
+# Check logs
+kubectl logs <pod-name> -n microservices
+```
 
-Before deploying to production:
+### Database Connection Issues
 
-1. Change all default passwords
-2. Use proper secrets management (e.g., Sealed Secrets, Vault)
-3. Configure proper resource limits
-4. Set up ingress controller
-5. Enable health checks and readiness probes
-6. Implement horizontal pod autoscaling
-7. Set up monitoring (Prometheus, Grafana)
-8. Configure proper backup strategies for databases
-9. Use external managed databases for production
-10. Implement proper logging and log aggregation
+```powershell
+# Check if shrine-db is running
+kubectl get pods -n microservices | findstr shrine-db
 
----
+# Check database logs
+kubectl logs -n microservices <shrine-db-pod-name>
 
-**Documentation Created**: November 4, 2025
-**Author**: GitHub Copilot
-**Project**: Microservices Architecture - Kubernetes Deployment
+# Test connection
+kubectl exec -it -n microservices <shrine-db-pod-name> -- psql -U postgres -d shrine_service
+```
+
+### Service Not Accessible
+
+```powershell
+# Check service endpoints
+kubectl get svc -n microservices
+
+# Check if NodePort is exposed
+kubectl describe svc api-gateway-service -n microservices
+
+# Test from inside cluster
+kubectl run test --rm -it --image=busybox -n microservices -- sh
+wget -O- http://api-gateway-service:3000/health
+```
+
+### Image Pull Errors
+
+```powershell
+# Rebuild images
+cd k8s
+.\build.ps1
+
+# Verify images exist locally
+docker images | findstr "shrine\|api-gateway\|frontend"
+
+# Delete pod to force image pull
+kubectl delete pod <pod-name> -n microservices
+```
+
+## Scaling Services
+
+### Manual Scaling
+
+```powershell
+# Scale shrine-service to 3 replicas
+kubectl scale deployment shrine-service -n microservices --replicas=3
+
+# Scale api-gateway
+kubectl scale deployment api-gateway -n microservices --replicas=5
+```
+
+### Auto-scaling (HPA)
+
+The API Gateway and Frontend already have HPA configured:
+
+```powershell
+# Check HPA status
+kubectl get hpa -n microservices
+
+# Describe HPA for details
+kubectl describe hpa api-gateway-hpa -n microservices
+```
+
+## Resource Usage
+
+### View Resource Consumption
+
+```powershell
+# Pod resource usage
+kubectl top pods -n microservices
+
+# Node resource usage
+kubectl top nodes
+```
+
+### Resource Limits
+
+Each service has defined resource limits:
+
+- **API Gateway**: 500m CPU, 512Mi memory
+- **Frontend**: 200m CPU, 256Mi memory
+- **Shrine Service**: 300m CPU, 512Mi memory
+- **Location Service**: 200m CPU, 256Mi memory
+
+## Updates and Rollbacks
+
+### Update Service Image
+
+```powershell
+# Rebuild image
+cd k8s
+.\build.ps1
+
+# Restart deployment to use new image
+kubectl rollout restart deployment/shrine-service -n microservices
+
+# Monitor rollout
+kubectl rollout status deployment/shrine-service -n microservices
+```
+
+### Rollback Deployment
+
+```powershell
+# View rollout history
+kubectl rollout history deployment/shrine-service -n microservices
+
+# Rollback to previous version
+kubectl rollout undo deployment/shrine-service -n microservices
+
+# Rollback to specific revision
+kubectl rollout undo deployment/shrine-service -n microservices --to-revision=2
+```
+
+## Configuration Management
+
+### Update ConfigMap
+
+```powershell
+# Edit configmap
+kubectl edit configmap app-config -n microservices
+
+# Or apply updated file
+kubectl apply -f configmap.yaml
+
+# Restart pods to use new config
+kubectl rollout restart deployment/api-gateway -n microservices
+```
+
+### Update Secrets
+
+```powershell
+# Edit secrets
+kubectl edit secret app-secrets -n microservices
+
+# Or recreate
+kubectl delete secret app-secrets -n microservices
+kubectl apply -f secrets.yaml
+```
+
+## Monitoring
+
+### View Logs
+
+```powershell
+# Follow logs from a deployment
+kubectl logs -f -n microservices -l app=api-gateway
+
+# View logs from all containers in a pod
+kubectl logs -n microservices <pod-name> --all-containers=true
+
+# View previous container logs (if crashed)
+kubectl logs -n microservices <pod-name> --previous
+```
+
+### Events
+
+```powershell
+# View cluster events
+kubectl get events -n microservices --sort-by='.lastTimestamp'
+
+# Watch events in real-time
+kubectl get events -n microservices --watch
+```
+
+## Best Practices
+
+1. **Always use the deployment scripts** (`build.ps1`, `deploy.ps1`) for consistency
+2. **Monitor resource usage** to adjust HPA thresholds
+3. **Keep secrets secure** - never commit `secrets.yaml` with real credentials
+4. **Test changes locally** before deploying to production
+5. **Use labels** for easy resource management
+6. **Document changes** in ConfigMaps and deployment manifests
+
+## Additional Resources
+
+- Kubernetes Documentation: https://kubernetes.io/docs/
+- kubectl Cheat Sheet: https://kubernetes.io/docs/reference/kubectl/cheatsheet/
+- Docker Best Practices: https://docs.docker.com/develop/dev-best-practices/
+- NestJS Microservices: https://docs.nestjs.com/microservices/basics
+
+## Support
+
+For issues or questions:
+
+- Check the k8s/README.md for detailed deployment steps
+- Review DEVELOPMENT.md for local development
+- See TESTING_GUIDE.md for testing procedures
