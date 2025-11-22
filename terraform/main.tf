@@ -8,19 +8,19 @@ terraform {
   }
 }
 
-# Master Node Module
+# Master Node Module (Runs on YOUR local computer)
 module "master" {
   source = "./modules/master"
 
-  master_ip            = var.master_ip
-  ssh_user             = var.ssh_user
-  ssh_private_key_path = var.ssh_private_key_path
-  cluster_name         = var.cluster_name
-  k3s_version          = var.k3s_version
-  registry_port        = var.registry_port
+  master_ip     = var.master_ip
+  cluster_name  = var.cluster_name
+  k3s_version   = var.k3s_version
+  registry_port = var.registry_port
+  
+  # Note: No SSH variables needed - master runs locally with local-exec
 }
 
-# Worker Nodes Module
+# Worker Nodes Module (Raspberry Pis - need SSH)
 module "workers" {
   source = "./modules/worker"
 
