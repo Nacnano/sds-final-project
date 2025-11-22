@@ -52,31 +52,34 @@ terraform/
 
 ## Quick Start
 
-1. **Initialize Terraform**
+### Option 1: Native Windows (PowerShell)
 
-   ```powershell
-   cd terraform
-   terraform init
-   ```
+```powershell
+cd terraform
+.\setup.ps1 -Action apply
+```
 
-2. **Review Configuration**
+### Option 2: Using WSL (Recommended for SSH compatibility)
 
-   ```powershell
-   # Edit terraform.tfvars with your settings
-   notepad terraform.tfvars
-   ```
+```powershell
+cd terraform
+.\setup-wsl.ps1 -Action apply -UseWSL
+```
 
-3. **Plan Infrastructure**
+### Option 3: Manual Terraform Commands
 
-   ```powershell
-   terraform plan
-   ```
+```powershell
+cd terraform
+terraform init
+terraform plan
+terraform apply
+```
 
-4. **Apply Configuration**
+**See also:**
 
-   ```powershell
-   terraform apply
-   ```
+- [QUICKSTART.md](./QUICKSTART.md) - 10-minute quick start
+- [WSL_SETUP.md](./WSL_SETUP.md) - WSL setup guide
+- [SETUP_GUIDE.md](./SETUP_GUIDE.md) - Comprehensive guide
 
 5. **Verify Cluster**
 

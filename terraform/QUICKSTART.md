@@ -18,6 +18,8 @@ This Terraform setup automates the entire cluster deployment for the สาย.m
 
 ### Quick Setup (10 minutes)
 
+**Windows PowerShell (Native):**
+
 ```powershell
 # 1. Navigate to terraform directory
 cd terraform
@@ -32,6 +34,42 @@ notepad terraform.tfvars  # Update IPs and SSH settings
 # 4. Verify cluster
 .\setup.ps1 -Action verify
 ```
+
+**Windows PowerShell (Using WSL) - Better SSH compatibility:**
+
+```powershell
+# 1. Navigate to terraform directory
+cd terraform
+
+# 2. Copy and edit configuration
+Copy-Item terraform.tfvars.example terraform.tfvars
+notepad terraform.tfvars  # Update IPs and SSH settings
+
+# 3. Run automated setup via WSL
+.\setup-wsl.ps1 -Action apply -UseWSL -AutoApprove
+
+# 4. Verify cluster
+.\setup-wsl.ps1 -Action verify -UseWSL
+```
+
+**Linux/Mac/WSL (Direct):**
+
+```bash
+# 1. Navigate to terraform directory
+cd terraform
+
+# 2. Copy and edit configuration
+cp terraform.tfvars.example terraform.tfvars
+nano terraform.tfvars  # Update IPs and SSH settings
+
+# 3. Run automated setup
+./setup.sh apply auto-approve
+
+# 4. Verify cluster
+./setup.sh verify
+```
+
+> **💡 Tip:** If you experience SSH connection issues on Windows, use the WSL option for better compatibility.
 
 ### What This Does
 
