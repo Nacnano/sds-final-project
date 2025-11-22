@@ -16,8 +16,6 @@ module "master" {
   cluster_name  = var.cluster_name
   k3s_version   = var.k3s_version
   registry_port = var.registry_port
-  
-  # Note: No SSH variables needed - master runs locally with local-exec
 }
 
 # Worker Nodes Module (Raspberry Pis - need SSH)

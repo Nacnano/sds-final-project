@@ -61,27 +61,38 @@ resource "null_resource" "worker_setup" {
   }
 }
 
-# Verify all workers joined
+# Verify all workers joined from local computer
 resource "null_resource" "verify_workers" {
   depends_on = [null_resource.worker_setup]
 
   provisioner "local-exec" {
     command = <<-EOT
-      echo "Verifying worker nodes joined the cluster..."
-      ssh -o StrictHostKeyChecking=no -i ${var.ssh_private_key_path} ${var.ssh_user}@${var.master_ip} "kubectl get nodes"
+      echo "=== Verifying worker nodes joined the cluster ==="
+      export KUBECONFIG=$HOME/.kube/config
+      kubectl get nodes -o wide
+      echo "✓ All nodes displayed above"
     EOT
+    interpreter = ["bash", "-c"]
   }
 }
 
-# Label worker nodes from master
+# Label worker nodes from local computer
 resource "null_resource" "label_workers" {
   depends_on = [null_resource.verify_workers]
   count      = length(var.worker_ips)
 
   provisioner "local-exec" {
     command = <<-EOT
-      echo "Labeling worker node ${count.index + 1}..."
-      ssh -o StrictHostKeyChecking=no -i ${var.ssh_private_key_path} ${var.ssh_user}@${var.master_ip} "kubectl label nodes $(kubectl get nodes -o jsonpath='{.items[?(@.status.addresses[?(@.address==\"${var.worker_ips[count.index}\")])].metadata.name}') node-role.kubernetes.io/worker=worker node.kubernetes.io/instance-type=raspberry-pi --overwrite || true"
+      echo "=== Labeling worker node ${count.index + 1} (${var.worker_ips[count.index]}) ==="
+      export KUBECONFIG=$HOME/.kube/config
+      NODE_NAME=$(kubectl get nodes -o jsonpath="{.items[?(@.status.addresses[?(@.address==\"${var.worker_ips[count.index]}\")])].metadata.name}")
+      if [ -n "$NODE_NAME" ]; then
+        kubectl label nodes "$NODE_NAME" node-role.kubernetes.io/worker=worker node.kubernetes.io/instance-type=raspberry-pi --overwrite
+        echo "✓ Labeled $NODE_NAME as worker"
+      else
+        echo "⚠ Warning: Could not find node with IP ${var.worker_ips[count.index]}"
+      fi
     EOT
+    interpreter = ["bash", "-c"]
   }
 }

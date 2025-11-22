@@ -51,11 +51,17 @@ resource "null_resource" "master_setup" {
   provisioner "local-exec" {
     command = <<-EOT
       echo '=== Installing K3s Master on This Computer ==='
-      curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=${var.k3s_version} sh -s - server --docker --write-kubeconfig-mode 644 --cluster-init
+      curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=${var.k3s_version} sh -s - server \
+        --docker \
+        --write-kubeconfig-mode 644 \
+        --bind-address ${var.master_ip} \
+        --advertise-address ${var.master_ip} \
+        --node-external-ip ${var.master_ip} \
+        --tls-san ${var.master_ip}
       sudo systemctl enable k3s
       sleep 30
       sudo systemctl status k3s --no-pager
-      echo '✓ K3s master installed successfully'
+      echo '✓ K3s master installed successfully on ${var.master_ip}'
     EOT
     interpreter = ["bash", "-c"]
   }
@@ -92,37 +98,16 @@ resource "null_resource" "master_setup" {
   }
 }
 
-# Get K3s token for workers
+# Get K3s token for workers (locally - no SSH needed)
 resource "null_resource" "get_k3s_token" {
   depends_on = [null_resource.master_setup]
 
   provisioner "local-exec" {
     command = <<-EOT
-      ssh -o StrictHostKeyChecking=no -i ${var.ssh_private_key_path} ${var.ssh_user}@${var.master_ip} "sudo cat /var/lib/rancher/k3s/server/node-token" > ${path.module}/k3s-token.txt
+      echo '=== Retrieving K3s token for workers ==='
+      sudo cat /var/lib/rancher/k3s/server/node-token > ${path.module}/k3s-token.txt
+      echo '✓ K3s token saved'
     EOT
-  }
-}
-
-# Configure registry for insecure access (for local development)
-resource "null_resource" "configure_registry" {
-  depends_on = [null_resource.master_setup]
-
-  connection {
-    type        = "ssh"
-    user        = var.ssh_user
-    host        = var.master_ip
-    private_key = file(var.ssh_private_key_path)
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "echo '=== Configuring Docker for insecure registry ==='",
-      "sudo mkdir -p /etc/docker",
-      "echo '{' | sudo tee /etc/docker/daemon.json",
-      "echo '  \"insecure-registries\": [\"${var.master_ip}:${var.registry_port}\"]' | sudo tee -a /etc/docker/daemon.json",
-      "echo '}' | sudo tee -a /etc/docker/daemon.json",
-      "sudo systemctl restart docker",
-      "echo '✓ Registry configured for insecure access'"
-    ]
+    interpreter = ["bash", "-c"]
   }
 }

@@ -6,8 +6,8 @@ output "k3s_token" {
 }
 
 output "kubeconfig_path" {
-  description = "Path to kubeconfig on master node"
-  value       = "/home/${var.ssh_user}/.kube/config"
+  description = "Path to kubeconfig on local computer"
+  value       = "$HOME/.kube/config"
 }
 
 output "master_status" {
