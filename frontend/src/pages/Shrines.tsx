@@ -29,9 +29,16 @@ const Shrines: React.FC = () => {
     try {
       setLoading(true);
       const data = await shrineService.getAll();
-      setShrines(data);
+      // Ensure data is an array before setting state
+      if (Array.isArray(data)) {
+        setShrines(data);
+      } else {
+        console.warn('Shrines data is not an array:', data);
+        setShrines([]);
+      }
     } catch (error) {
       console.error('Error fetching shrines:', error);
+      setShrines([]);
     } finally {
       setLoading(false);
     }

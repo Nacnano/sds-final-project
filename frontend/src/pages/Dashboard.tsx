@@ -14,10 +14,20 @@ const Dashboard: React.FC = () => {
       try {
         // Fetch shrines
         const shrinesData = await shrineService.getAll();
-        setAllShrines(shrinesData);
-        setShrines(shrinesData.slice(0, 3)); // Show first 3 shrines
+        // Ensure shrinesData is an array before using it
+        if (Array.isArray(shrinesData)) {
+          setAllShrines(shrinesData);
+          setShrines(shrinesData.slice(0, 3)); // Show first 3 shrines
+        } else {
+          console.warn('Shrines data is not an array:', shrinesData);
+          setAllShrines([]);
+          setShrines([]);
+        }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
+        // Set empty arrays on error
+        setAllShrines([]);
+        setShrines([]);
       } finally {
         setLoading(false);
       }

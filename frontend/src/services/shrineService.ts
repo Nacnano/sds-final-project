@@ -3,8 +3,14 @@ import type { Shrine, CreateShrineRequest } from '../types';
 
 export const shrineService = {
   async getAll(): Promise<Shrine[]> {
-    const response = await api.get<{ shrines: Shrine[] }>('/shrines');
-    return response.data.shrines;
+    try {
+      const response = await api.get<{ shrines: Shrine[] }>('/shrines');
+      // Ensure we always return an array
+      return Array.isArray(response.data?.shrines) ? response.data.shrines : [];
+    } catch (error) {
+      console.error('Error in shrineService.getAll:', error);
+      return [];
+    }
   },
 
   async getById(id: string): Promise<Shrine> {
@@ -17,7 +23,10 @@ export const shrineService = {
     return response.data;
   },
 
-  async update(id: string, data: Partial<CreateShrineRequest>): Promise<Shrine> {
+  async update(
+    id: string,
+    data: Partial<CreateShrineRequest>,
+  ): Promise<Shrine> {
     const response = await api.patch<Shrine>(`/shrines/${id}`, data);
     return response.data;
   },
