@@ -23,8 +23,14 @@ services:
       - "5432:5432"
     volumes:
       - shrine_db_data:/var/lib/postgresql/data
+      - ./tools/scripts/init-shrine-db.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   # Microservices
   shrine-service:
@@ -40,12 +46,16 @@ services:
       LOCATION_SERVICE_URL: location-service:5006
       NODE_ENV: production
       SHRINE_DATABASE_PORT: 5432
+      REDIS_ENABLED: "false"
     ports:
       - "5001:5001"
     depends_on:
-      - shrine-db
-      - location-service
-      - rabbitmq
+      shrine-db:
+        condition: service_healthy
+      location-service:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
     networks:
       - microservices-network
     volumes:

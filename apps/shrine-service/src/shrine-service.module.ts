@@ -5,7 +5,6 @@ import { ShrineServiceController } from './shrine-service.controller';
 import { ShrineService } from './shrine-service.service';
 import { Shrine } from './entities/shrine.entity';
 import { ClientsModule, Transport } from '@nestjs/microservices'; // <-- Import necessary types
-import { redisFactory } from './redis.provider';
 import { join } from 'path';
 
 @Module({
@@ -30,7 +29,7 @@ import { join } from 'path';
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([Shrine]),
-    
+
     ClientsModule.registerAsync([
       {
         name: 'SHRINE_SERVICE',
@@ -38,10 +37,12 @@ import { join } from 'path';
         useFactory: (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: [configService.get<string>('RABBITMQ_URL', 'amqp://rabbitmq:5672')], 
+            urls: [
+              configService.get<string>('RABBITMQ_URL', 'amqp://rabbitmq:5672'),
+            ],
             queue: 'shrine_queue',
             queueOptions: {
-              durable: false
+              durable: false,
             },
           },
         }),
@@ -66,6 +67,6 @@ import { join } from 'path';
     ]),
   ],
   controllers: [ShrineServiceController],
-  providers: [ShrineService, redisFactory],
+  providers: [ShrineService],
 })
 export class ShrineServiceModule {}
