@@ -1,15 +1,8 @@
+# Master Module Variables
+# NOTE: Master is your LOCAL computer running Terraform, no SSH needed
+
 variable "master_ip" {
-  description = "IP address of the master node"
-  type        = string
-}
-
-variable "ssh_user" {
-  description = "SSH username"
-  type        = string
-}
-
-variable "ssh_private_key_path" {
-  description = "Path to SSH private key"
+  description = "IP address of the master node (your computer)"
   type        = string
 }
 

@@ -14,9 +14,21 @@ This directory contains Terraform configurations for provisioning the infrastruc
    ```
 
 2. **SSH Access to Raspberry Pis**
-   - All Raspberry Pis must be accessible via SSH
-   - SSH keys should be set up for passwordless authentication
+   - **SSH is ONLY needed for Raspberry Pi worker nodes (not master)**
+   - Master node is YOUR computer running Terraform - no SSH needed
+   - Set up passwordless SSH to Raspberry Pis (192.168.1.11-14)
    - Default user: `ubuntu` (for Ubuntu Server on Pi)
+
+   ```powershell
+   # Generate SSH key if you don't have one
+   ssh-keygen -t rsa -b 4096
+
+   # Copy SSH key to each Raspberry Pi
+   ssh-copy-id ubuntu@192.168.1.11
+   ssh-copy-id ubuntu@192.168.1.12
+   ssh-copy-id ubuntu@192.168.1.13
+   ssh-copy-id ubuntu@192.168.1.14
+   ```
 
 3. **Network Configuration**
    - Router: TP-Link TL-WR841N
@@ -95,15 +107,17 @@ terraform apply
 
 Key variables to customize in `terraform.tfvars`:
 
-- `master_ip` - Master node IP address (default: 192.168.1.10)
-- `worker_ips` - List of worker node IPs (default: ["192.168.1.11", "192.168.1.12", "192.168.1.13", "192.168.1.14"])
-- `ssh_user` - SSH username (default: ubuntu)
-- `ssh_private_key_path` - Path to SSH private key
+- `master_ip` - Master node IP address (YOUR computer, default: 192.168.1.10)
+- `worker_ips` - List of Raspberry Pi IPs (default: ["192.168.1.11", "192.168.1.12", "192.168.1.13", "192.168.1.14"])
+- `ssh_user` - SSH username for **Raspberry Pis only** (default: ubuntu)
+- `ssh_private_key_path` - Path to SSH private key for **Raspberry Pis only**
 - `cluster_name` - Kubernetes cluster name (default: sai-mu-cluster)
 
 ## What Terraform Will Do
 
-### Master Node (Laptop/Desktop)
+### Master Node (Your Computer - No SSH)
+
+Terraform will run these commands **locally on your computer** using `local-exec`:
 
 1. Install Docker
 2. Setup Docker registry on port 5000
@@ -112,7 +126,9 @@ Key variables to customize in `terraform.tfvars`:
 5. Configure kubeconfig
 6. Install Kubernetes dashboard (optional)
 
-### Worker Nodes (Raspberry Pis)
+### Worker Nodes (Raspberry Pis - SSH Required)
+
+Terraform will connect via SSH to each Raspberry Pi and:
 
 1. Install Docker on each Pi
 2. Join K3s cluster as worker nodes

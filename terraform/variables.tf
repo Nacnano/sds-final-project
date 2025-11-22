@@ -1,5 +1,5 @@
 variable "master_ip" {
-  description = "IP address of the master node (your laptop)"
+  description = "IP address of the master node (your laptop running Terraform)"
   type        = string
   default     = "192.168.1.10"
 }
@@ -11,13 +11,13 @@ variable "worker_ips" {
 }
 
 variable "ssh_user" {
-  description = "SSH username for all nodes"
+  description = "SSH username for WORKER nodes (Raspberry Pis only)"
   type        = string
   default     = "ubuntu"
 }
 
 variable "ssh_private_key_path" {
-  description = "Path to SSH private key for authentication"
+  description = "Path to SSH private key for WORKER nodes (Raspberry Pis only)"
   type        = string
   default     = "~/.ssh/id_rsa"
 }
