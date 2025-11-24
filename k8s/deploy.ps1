@@ -20,7 +20,7 @@ kubectl apply -f k8s/rabbitmq.yaml
 
 # Wait for databases to be ready
 Write-Host "`n5. Waiting for databases to be ready..." -ForegroundColor Yellow
-Start-Sleep -Seconds 10
+Start-Sleep -Seconds 5
 
 # 6. Deploy microservices
 Write-Host "`n6. Deploying microservices..." -ForegroundColor Yellow
@@ -29,7 +29,7 @@ kubectl apply -f k8s/location-service.yaml
 
 # Wait for services to be ready
 Write-Host "`n7. Waiting for services to be ready..." -ForegroundColor Yellow
-Start-Sleep -Seconds 10
+Start-Sleep -Seconds 5
 
 # 8. Deploy API Gateway
 Write-Host "`n8. Deploying API Gateway..." -ForegroundColor Yellow
