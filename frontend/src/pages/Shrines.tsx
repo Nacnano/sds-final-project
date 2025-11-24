@@ -15,6 +15,7 @@ const Shrines: React.FC = () => {
   const [searchLocation, setSearchLocation] = useState('');
   const [searchRadius, setSearchRadius] = useState(5);
   const [isSearching, setIsSearching] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchShrines();
@@ -51,17 +52,25 @@ const Shrines: React.FC = () => {
     e.preventDefault();
     if (!searchLocation.trim()) {
       fetchShrines();
+      setLocationError(null);
       return;
     }
 
     try {
       setLoading(true);
       setIsSearching(true);
+      setLocationError(null);
       const data = await shrineService.findNearby(searchLocation, searchRadius);
       setShrines(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error searching shrines:', error);
-      alert('Failed to search shrines. Please check the location and try again.');
+      // Check if it's a location not found error
+      if (error?.response?.status === 404 || error?.response?.data?.message?.includes('No coordinates found')) {
+        setLocationError(error?.response?.data?.message || `Location "${searchLocation}" not found`);
+        setShrines([]);
+      } else {
+        setLocationError('Failed to search shrines. Please try again.');
+      }
     } finally {
       setLoading(false);
       setIsSearching(false);
@@ -191,7 +200,28 @@ const Shrines: React.FC = () => {
           </form>
         </div>
 
-        {searchLocation && !loading && shrines.length > 0 && (
+        {locationError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center mb-6">
+            <p className="text-red-800 font-medium mb-2">
+              ❌ {locationError}
+            </p>
+            <p className="text-red-600 text-sm mb-4">
+              Please check the spelling or try a different location name.
+            </p>
+            <button
+              onClick={() => {
+                setSearchLocation('');
+                setLocationError(null);
+                fetchShrines();
+              }}
+              className="btn-secondary"
+            >
+              View All Shrines
+            </button>
+          </div>
+        )}
+
+        {searchLocation && !loading && !locationError && shrines.length > 0 && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <p className="text-blue-800 font-medium">
               🎯 Found {shrines.length} shrine{shrines.length !== 1 ? 's' : ''} within {searchRadius} km of "{searchLocation}"
@@ -199,7 +229,7 @@ const Shrines: React.FC = () => {
           </div>
         )}
 
-        {shrines.length === 0 && !loading && (
+        {shrines.length === 0 && !loading && !locationError && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
             <p className="text-yellow-800 font-medium mb-2">
               {isSearching || searchLocation ? '🔍 No shrines found in this area' : '📍 No shrines available'}
