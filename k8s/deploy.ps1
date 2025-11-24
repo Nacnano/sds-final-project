@@ -48,6 +48,10 @@ kubectl apply -f k8s/pgadmin.yaml
 Write-Host "`n11. Checking deployment status..." -ForegroundColor Yellow
 kubectl get all -n microservices
 
+# 12. Seed databases
+Write-Host "`n12. Seeding databases..." -ForegroundColor Yellow
+./k8s/seed.ps1
+
 Write-Host "`nDeployment complete!" -ForegroundColor Green
 Write-Host "`nTo access the services:" -ForegroundColor Cyan
 Write-Host "- API Gateway: http://localhost:30000" -ForegroundColor White
