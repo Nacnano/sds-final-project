@@ -150,7 +150,7 @@ const shrineData = [
     province: 'Bangkok',
     latitude: 13.7445,
     longitude: 100.5404,
-    imageUrl: 'https://img.wongnai.com/p/1920x0/2020/12/15/b07211c26b5d4d14991587a7905c4213.jpg',
+    imageUrl: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/15/57/d9/65/photo0jpg.jpg',
   },
   {
     id: '6731a1b2c4d5e6f7a8b9c0dc',
@@ -162,7 +162,7 @@ const shrineData = [
     province: 'Bangkok',
     latitude: 13.7242,
     longitude: 100.5229,
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Sri_Maha_Mariamman_Temple_Bangkok_01.jpg',
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Wat_Khaek_Silom_Sri_Mariamman_Hindu_temple_Bangkok.jpg/1200px-Wat_Khaek_Silom_Sri_Mariamman_Hindu_temple_Bangkok.jpg',
   },
   {
     id: '6731a1b2c4d5e6f7a8b9c0dd',
@@ -174,7 +174,7 @@ const shrineData = [
     province: 'Bangkok',
     latitude: 13.7323,
     longitude: 100.5292,
-    imageUrl: 'https://www.tourismthailand.org/Images/attraction/content/2441/1.jpg',
+    imageUrl: 'https://www.mercurebangkoksurawong.com/wp-content/uploads/sites/56/2023/10/Wat-Hua-Lampong-1366x768.jpg',
   },
   {
     id: '6731a1b2c4d5e6f7a8b9c0de',
@@ -186,7 +186,7 @@ const shrineData = [
     province: 'Bangkok',
     latitude: 13.7525,
     longitude: 100.4993,
-    imageUrl: 'https://lh3.googleusercontent.com/p/AF1QipP-5JkY3Qe_XqW_Lg5o5o5Q9Q9Q9Q9Q9Q9Q9Q9Q=s1600-w1200',
+    imageUrl: 'https://d2d3n9ufwugv3m.cloudfront.net/w1600-h1200-cfill-q80/topics/TRDqH-a3.jpg',
   },
   {
     id: '6731a1b2c4d5e6f7a8b9c0df',
@@ -198,7 +198,7 @@ const shrineData = [
     province: 'Bangkok',
     latitude: 13.7433,
     longitude: 100.5093,
-    imageUrl: 'https://media.timeout.com/images/105244294/image.jpg',
+    imageUrl: 'https://www.northofknown.com/wp-content/uploads/2023/09/DSCF5711-2.jpg',
   },
   {
     id: '6731a1b2c4d5e6f7a8b9c0e0',
@@ -210,7 +210,7 @@ const shrineData = [
     province: 'Bangkok',
     latitude: 13.7108,
     longitude: 100.6013,
-    imageUrl: 'https://thesmartlocal.co.th/wp-content/uploads/2020/10/Mae-Nak-Shrine-Cover-Image.jpg',
+    imageUrl: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/05/f3/1f/22/wat-mahabut.jpg?w=1400&h=-1&s=1',
   },
   {
     id: '6731a1b2c4d5e6f7a8b9c0e1',
@@ -222,7 +222,7 @@ const shrineData = [
     province: 'Bangkok',
     latitude: 13.7381,
     longitude: 100.5137,
-    imageUrl: 'https://cdn.getyourguide.com/img/location/5ffeb52c62d1e.jpeg/88.jpg',
+    imageUrl: 'https://www.renown-travel.com/images/wat-traimit-l.webp',
   },
   {
     id: '6731a1b2c4d5e6f7a8b9c0e2',
@@ -234,7 +234,7 @@ const shrineData = [
     province: 'Bangkok',
     latitude: 13.7384,
     longitude: 100.5110,
-    imageUrl: 'https://lh3.googleusercontent.com/p/AF1QipN1l1l1l1l1l1l1l1l1l1l1l1l1l1l1l1l1=s1600-w1200',
+    imageUrl: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/16/e1/ea/7b/kuan-yim-shrine.jpg?w=1400&h=800&s=1',
   },
   {
     id: '6731a1b2c4d5e6f7a8b9c0e3',
@@ -246,7 +246,7 @@ const shrineData = [
     province: 'Bangkok',
     latitude: 13.7441,
     longitude: 100.5413,
-    imageUrl: 'https://readthecloud.co/wp-content/uploads/2019/12/god-shopping-2.jpg',
+    imageUrl: 'https://www.tour-bangkok-legacies.com/images/bangkok-shrines-indra-min.jpg',
   },
   {
     id: '6731a1b2c4d5e6f7a8b9c0e4',
@@ -258,7 +258,7 @@ const shrineData = [
     province: 'Bangkok',
     latitude: 13.7446,
     longitude: 100.5417,
-    imageUrl: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0b/df/64/35/narayana-shrine.jpg?w=1200&h=-1&s=1',
+    imageUrl: 'https://lh3.googleusercontent.com/gps-cs-s/AG0ilSymQSpFbuoznMHXxJU1WCGl71ID7BLfWBS8eLOsTpxfMnTlHWPGLrwqXbMe4Fg85EVPJ3w31rl7-sbdZct5SXWVxMhz6W7APXXrTzz3xcRhO5fPoHuhBg0MSpVqA3yP-w7wXk4=w408-h544-k-no',
   },
 ];
 
