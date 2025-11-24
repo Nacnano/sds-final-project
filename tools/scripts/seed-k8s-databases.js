@@ -140,6 +140,126 @@ const shrineData = [
     longitude: 100.5489,
     imageUrl: 'https://atmindgroup.com/hotelambersukhumvit85/wp-content/uploads/2024/04/IMG_3393-1920x893.jpg'
   },
+  {
+    id: '6731a1b2c4d5e6f7a8b9c0db',
+    name: 'Lakshmi Shrine',
+    description:
+      'Located on the Gaysorn Village rooftop, this shrine is dedicated to the Goddess of Wealth and Fortune. It is also highly popular for those seeking love and beauty.',
+    location: '999 Ploenchit Rd, Pathum Wan, Bangkok 10330',
+    category: 'wealth',
+    province: 'Bangkok',
+    latitude: 13.7445,
+    longitude: 100.5404,
+    imageUrl: 'https://img.wongnai.com/p/1920x0/2020/12/15/b07211c26b5d4d14991587a7905c4213.jpg',
+  },
+  {
+    id: '6731a1b2c4d5e6f7a8b9c0dc',
+    name: 'Sri Maha Mariamman Temple (Wat Khaek)',
+    description:
+      'A vibrant Hindu temple in Silom dedicated to Goddess Uma Devi. It is extremely famous for blessings regarding love, fertility, and protection from bad luck.',
+    location: '2 Pan Rd, Silom, Bang Rak, Bangkok 10500',
+    category: 'love',
+    province: 'Bangkok',
+    latitude: 13.7242,
+    longitude: 100.5229,
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/Sri_Maha_Mariamman_Temple_Bangkok_01.jpg',
+  },
+  {
+    id: '6731a1b2c4d5e6f7a8b9c0dd',
+    name: 'Wat Hua Lamphong',
+    description:
+      'Famous for the Ruamkatanyu Foundation where visitors donate coffins for the deceased without relatives. It is believed to improve karma, extend life, and bring good health.',
+    location: '728 Rama IV Rd, Si Phraya, Bang Rak, Bangkok 10500',
+    category: 'health',
+    province: 'Bangkok',
+    latitude: 13.7323,
+    longitude: 100.5292,
+    imageUrl: 'https://www.tourismthailand.org/Images/attraction/content/2441/1.jpg',
+  },
+  {
+    id: '6731a1b2c4d5e6f7a8b9c0de',
+    name: 'Tiger God Shrine (San Chao Pho Suea)',
+    description:
+      'A very potent Chinese shrine in the Old City. Locals flock here to ask for power, promotion in their career, and the removal of obstacles or bad spirits.',
+    location: '468 Tanao Road, San Chao Pho Sua, Phra Nakhon, Bangkok 10200',
+    category: 'career',
+    province: 'Bangkok',
+    latitude: 13.7525,
+    longitude: 100.4993,
+    imageUrl: 'https://lh3.googleusercontent.com/p/AF1QipP-5JkY3Qe_XqW_Lg5o5o5Q9Q9Q9Q9Q9Q9Q9Q9Q=s1600-w1200',
+  },
+  {
+    id: '6731a1b2c4d5e6f7a8b9c0df',
+    name: 'Wat Mangkon Kamalawat (Leng Noei Yi)',
+    description:
+      'The largest Chinese Buddhist temple in Bangkok. Famous for resolving "Year of the Zodiac" conflicts (Tai Sui) and praying for general prosperity and health.',
+    location: '423 Charoen Krung Rd, Pom Prap, Bangkok 10100',
+    category: 'spiritual',
+    province: 'Bangkok',
+    latitude: 13.7433,
+    longitude: 100.5093,
+    imageUrl: 'https://media.timeout.com/images/105244294/image.jpg',
+  },
+  {
+    id: '6731a1b2c4d5e6f7a8b9c0e0',
+    name: 'Mae Nak Phra Khanong Shrine',
+    description:
+      'Dedicated to the legendary ghost Mae Nak. People visit to pray for enduring love, easy childbirth, and to draw lucky lottery numbers.',
+    location: 'Wat Mahabut, On Nut 7/1 Alley, Suan Luang, Bangkok 10250',
+    category: 'love',
+    province: 'Bangkok',
+    latitude: 13.7108,
+    longitude: 100.6013,
+    imageUrl: 'https://thesmartlocal.co.th/wp-content/uploads/2020/10/Mae-Nak-Shrine-Cover-Image.jpg',
+  },
+  {
+    id: '6731a1b2c4d5e6f7a8b9c0e1',
+    name: 'Wat Traimit (Golden Buddha)',
+    description:
+      'Home to the world’s largest solid gold Buddha image. It is a major landmark in Chinatown visited by those seeking wealth, luck, and prosperity.',
+    location: '661 Charoen Krung Rd, Talat Noi, Samphanthawong, Bangkok 10100',
+    category: 'wealth',
+    province: 'Bangkok',
+    latitude: 13.7381,
+    longitude: 100.5137,
+    imageUrl: 'https://cdn.getyourguide.com/img/location/5ffeb52c62d1e.jpeg/88.jpg',
+  },
+  {
+    id: '6731a1b2c4d5e6f7a8b9c0e2',
+    name: 'Kuan Yin Shrine (Thian Fa Foundation)',
+    description:
+      'Located in the heart of Chinatown, this shrine houses a statue of the Goddess of Mercy made of sandalwood. It is a top destination for praying for good health.',
+    location: 'Yaowarat Road, Samphanthawong, Bangkok 10100',
+    category: 'health',
+    province: 'Bangkok',
+    latitude: 13.7384,
+    longitude: 100.5110,
+    imageUrl: 'https://lh3.googleusercontent.com/p/AF1QipN1l1l1l1l1l1l1l1l1l1l1l1l1l1l1l1l1=s1600-w1200',
+  },
+  {
+    id: '6731a1b2c4d5e6f7a8b9c0e3',
+    name: 'Indra Shrine',
+    description:
+      'Located in front of Amarin Plaza, this shrine is dedicated to the King of Gods. Devotees pray here for protection, authority, and career advancement.',
+    location: '496 Ploenchit Rd, Pathum Wan, Bangkok 10330',
+    category: 'career',
+    province: 'Bangkok',
+    latitude: 13.7441,
+    longitude: 100.5413,
+    imageUrl: 'https://readthecloud.co/wp-content/uploads/2019/12/god-shopping-2.jpg',
+  },
+  {
+    id: '6731a1b2c4d5e6f7a8b9c0e4',
+    name: 'Narayan Shrine',
+    description:
+      'Located in front of the InterContinental Hotel, dedicated to Lord Vishnu. Known for protecting businesses and granting success in trade and commerce.',
+    location: '973 Ploenchit Rd, Pathum Wan, Bangkok 10330',
+    category: 'wealth',
+    province: 'Bangkok',
+    latitude: 13.7446,
+    longitude: 100.5417,
+    imageUrl: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0b/df/64/35/narayana-shrine.jpg?w=1200&h=-1&s=1',
+  },
 ];
 
 async function seedShrines(client) {
@@ -154,12 +274,14 @@ async function seedShrines(client) {
 
   console.log('   Inserting shrines...');
 
-  // Note: Assuming standard TypeORM naming (snake_case) for created_at/updated_at
-  // and explicit column name for image_url.
+  // Note: Database uses "createdAt" and "updatedAt" (camelCase with quotes)
   // ID is required as it's not auto-generated in DB.
   const query = `
-    INSERT INTO shrines (id, name, description, location, category, lat, lng, image_url, created_at, updated_at)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+    INSERT INTO shrines (
+      id, "createdAt", "updatedAt", name, description, location, lat, lng, category, image_url
+    )
+    VALUES ($1, NOW(), NOW(), $2, $3, $4, $5, $6, $7, $8)
+    ON CONFLICT (id) DO NOTHING
   `;
 
   for (const shrine of shrineData) {
@@ -168,13 +290,13 @@ async function seedShrines(client) {
       shrine.name,
       shrine.description,
       shrine.location,
-      shrine.category,
       shrine.latitude,
       shrine.longitude,
-      shrine.imageUrl || null,
-    ]);
+      shrine.category,
+      shrine.imageUrl,
+   ]);
   }
-  
+
   console.log(`   ✅ Inserted ${shrineData.length} shrines`);
 }
 
