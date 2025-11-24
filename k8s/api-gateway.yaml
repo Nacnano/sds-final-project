@@ -54,46 +54,11 @@ spec:
                 configMapKeyRef:
                   name: microservices-config
                   key: SHRINE_SERVICE_URL
-            - name: TECHNIQUE_SERVICE_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: microservices-config
-                  key: TECHNIQUE_SERVICE_URL
-            - name: USER_SERVICE_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: microservices-config
-                  key: USER_SERVICE_URL
             - name: LOCATION_SERVICE_URL
               valueFrom:
                 configMapKeyRef:
                   name: microservices-config
                   key: LOCATION_SERVICE_URL
-            - name: RATING_SERVICE_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: microservices-config
-                  key: RATING_SERVICE_URL
-            - name: SHRINE_DISCOVERY_SERVICE_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: microservices-config
-                  key: SHRINE_DISCOVERY_SERVICE_URL
-            - name: WISHING_SERVICE_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: microservices-config
-                  key: WISHING_SERVICE_URL
-            - name: LOCATION_SERVICE_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: microservices-config
-                  key: LOCATION_SERVICE_URL
-            - name: RATING_SERVICE_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: microservices-config
-                  key: RATING_SERVICE_URL
             - name: FRONTEND_URL
               valueFrom:
                 configMapKeyRef:
@@ -104,21 +69,6 @@ spec:
                 secretKeyRef:
                   name: microservices-secrets
                   key: JWT_SECRET
-            - name: GOOGLE_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: microservices-secrets
-                  key: GOOGLE_CLIENT_ID
-            - name: GOOGLE_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: microservices-secrets
-                  key: GOOGLE_CLIENT_SECRET
-            - name: GOOGLE_CALLBACK_URL
-              valueFrom:
-                secretKeyRef:
-                  name: microservices-secrets
-                  key: GOOGLE_CALLBACK_URL
           resources:
             requests:
               memory: '256Mi'
