@@ -28,12 +28,9 @@ export class LocationService {
       this.logger.warn(`No coordinates found for address: ${address}`);
       throw new RpcException({
         code: status.NOT_FOUND,
-        message: `No coordinates found for "${address}". Available locations: ${MOCK_LOCATIONS.slice(
-          0,
-          5,
-        )
+        message: `No coordinates found for "${address}". Available locations: ${MOCK_LOCATIONS
           .map((l) => l.name)
-          .join(', ')}...`,
+          .join(', ')}`,
       });
     }
 
