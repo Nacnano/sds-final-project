@@ -35,6 +35,12 @@ export interface DeleteShrineByIdRequest {
   id: string;
 }
 
+export interface FindNearbyRequest {
+  lat: number;
+  lng: number;
+  radius: number;
+}
+
 export interface ShrineResponse {
   id: string;
   name: string;
@@ -67,6 +73,8 @@ export interface ShrineServiceClient {
   updateShrineById(request: UpdateShrineByIdRequest): Observable<ShrineResponse>;
 
   deleteShrineById(request: FindShrineByIdRequest): Observable<ShrineResponse>;
+
+  findNearby(request: FindNearbyRequest): Observable<ShrinesResponse>;
 }
 
 export interface ShrineServiceController {
@@ -83,6 +91,10 @@ export interface ShrineServiceController {
   deleteShrineById(
     request: FindShrineByIdRequest,
   ): Promise<ShrineResponse> | Observable<ShrineResponse> | ShrineResponse;
+
+  findNearby(
+    request: FindNearbyRequest,
+  ): Promise<ShrinesResponse> | Observable<ShrinesResponse> | ShrinesResponse;
 }
 
 export function ShrineServiceControllerMethods() {
@@ -93,6 +105,7 @@ export function ShrineServiceControllerMethods() {
       "findAllShrines",
       "updateShrineById",
       "deleteShrineById",
+      "findNearby",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

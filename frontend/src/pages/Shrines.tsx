@@ -12,6 +12,9 @@ const Shrines: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [searchLocation, setSearchLocation] = useState('');
+  const [searchRadius, setSearchRadius] = useState(5);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     fetchShrines();
@@ -41,6 +44,27 @@ const Shrines: React.FC = () => {
       setShrines([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchLocation.trim()) {
+      fetchShrines();
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setIsSearching(true);
+      const data = await shrineService.findNearby(searchLocation, searchRadius);
+      setShrines(data);
+    } catch (error) {
+      console.error('Error searching shrines:', error);
+      alert('Failed to search shrines. Please check the location and try again.');
+    } finally {
+      setLoading(false);
+      setIsSearching(false);
     }
   };
 
@@ -113,6 +137,57 @@ const Shrines: React.FC = () => {
           >
             + Add Shrine
           </button>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
+          <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4 items-end">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Search Location
+              </label>
+              <input
+                type="text"
+                value={searchLocation}
+                onChange={(e) => setSearchLocation(e.target.value)}
+                placeholder="e.g., Siam, Bangkok"
+                className="input-field"
+              />
+            </div>
+            <div className="w-full md:w-48">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Radius (km)
+              </label>
+              <input
+                type="number"
+                value={searchRadius}
+                onChange={(e) => setSearchRadius(Number(e.target.value))}
+                min="1"
+                max="50"
+                className="input-field"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                disabled={isSearching}
+                className="btn-primary whitespace-nowrap"
+              >
+                {isSearching ? 'Searching...' : 'Search Nearby'}
+              </button>
+              {searchLocation && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchLocation('');
+                    fetchShrines();
+                  }}
+                  className="btn-secondary whitespace-nowrap"
+                >
+                  Reset
+                </button>
+              )}
+            </div>
+          </form>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

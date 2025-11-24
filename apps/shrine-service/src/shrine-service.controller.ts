@@ -8,6 +8,7 @@ import type {
   DeleteShrineByIdRequest,
   ShrineResponse,
   ShrinesResponse,
+  FindNearbyRequest,
 } from '@app/shared/interfaces/shrine';
 
 @Controller()
@@ -42,5 +43,15 @@ export class ShrineServiceController {
     data: DeleteShrineByIdRequest,
   ): Promise<ShrineResponse> {
     return this.shrineService.deleteShrineById(data.id);
+  }
+
+  @GrpcMethod('ShrineService', 'FindNearby')
+  async findNearby(data: FindNearbyRequest): Promise<ShrinesResponse> {
+    const shrines = await this.shrineService.findNearby(
+      data.lat,
+      data.lng,
+      data.radius,
+    );
+    return { shrines };
   }
 }

@@ -271,6 +271,48 @@ export class ShrineService implements OnModuleInit {
     }
   }
 
+  async findNearby(lat: number, lng: number, radius: number): Promise<ShrineResponse[]> {
+    try {
+      const shrines = await this.shrineRepository.find();
+      
+      const nearbyShrines = shrines.filter(shrine => {
+        if (shrine.lat === null || shrine.lng === null) return false;
+        
+        const distance = this.calculateDistance(lat, lng, shrine.lat, shrine.lng);
+        // Convert radius from km to meters for comparison if needed, 
+        // but let's assume input radius is in km and calculateDistance returns km.
+        // Wait, the LocationService mock returns meters. Let's stick to meters or km.
+        // Plan said "radius (number, default 5km)".
+        // Let's implement Haversine here returning km.
+        return distance <= radius;
+      });
+
+      return nearbyShrines.map(shrine => this.mapToResponse(shrine));
+    } catch (err) {
+      this.logger.error('Failed to find nearby shrines', err);
+      throw new RpcException({
+        code: status.INTERNAL,
+        message: 'Failed to find nearby shrines',
+      });
+    }
+  }
+
+  private calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const R = 6371; // Earth's radius in km
+    const dLat = this.toRad(lat2 - lat1);
+    const dLng = this.toRad(lng2 - lng1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  private toRad(value: number): number {
+    return (value * Math.PI) / 180;
+  }
+
   private mapToResponse(shrine: Shrine): ShrineResponse {
     return {
       id: shrine.id,

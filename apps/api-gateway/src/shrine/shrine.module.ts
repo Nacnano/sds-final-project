@@ -20,6 +20,19 @@ import { ShrineController } from './shrine.controller';
         }),
         inject: [ConfigService],
       },
+      {
+        name: 'LOCATION_PACKAGE',
+        imports: [ConfigModule],
+        useFactory: async (configService: ConfigService) => ({
+          transport: Transport.GRPC,
+          options: {
+            package: 'location',
+            protoPath: join(__dirname, '../proto/location.proto'),
+            url: configService.get('LOCATION_SERVICE_URL', 'localhost:5006'),
+          },
+        }),
+        inject: [ConfigService],
+      },
     ]),
   ],
   controllers: [ShrineController],

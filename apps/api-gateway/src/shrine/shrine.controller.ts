@@ -8,9 +8,10 @@ import {
   OnModuleInit,
   Patch,
   Delete,
+  Query,
 } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
+import { Observable, lastValueFrom } from 'rxjs';
 import type {
   CreateShrineRequest,
   UpdateShrineByIdRequest,
@@ -18,16 +19,23 @@ import type {
   ShrinesResponse,
   ShrineServiceClient,
 } from '@app/shared/interfaces/shrine';
+import { LocationServiceClient } from '@app/shared/interfaces/location';
 
 @Controller('shrines')
 export class ShrineController implements OnModuleInit {
   private shrineService: ShrineServiceClient;
+  private locationService: LocationServiceClient;
 
-  constructor(@Inject('SHRINE_PACKAGE') private client: ClientGrpc) {}
+  constructor(
+    @Inject('SHRINE_PACKAGE') private shrineClient: ClientGrpc,
+    @Inject('LOCATION_PACKAGE') private locationClient: ClientGrpc,
+  ) {}
 
   onModuleInit() {
     this.shrineService =
-      this.client.getService<ShrineServiceClient>('ShrineService');
+      this.shrineClient.getService<ShrineServiceClient>('ShrineService');
+    this.locationService =
+      this.locationClient.getService<LocationServiceClient>('LocationService');
   }
 
   @Post()
@@ -35,6 +43,24 @@ export class ShrineController implements OnModuleInit {
     @Body() createShrineDto: CreateShrineRequest,
   ): Observable<ShrineResponse> {
     return this.shrineService.createShrine(createShrineDto);
+  }
+
+  @Get('nearby/search')
+  async findNearby(
+    @Query('location') location: string,
+    @Query('radius') radius: string,
+  ): Promise<ShrinesResponse> {
+    const coords = await lastValueFrom(
+      this.locationService.getCoordinates({ location }),
+    );
+
+    return lastValueFrom(
+      this.shrineService.findNearby({
+        lat: coords.lat,
+        lng: coords.lng,
+        radius: parseFloat(radius) || 5,
+      }),
+    );
   }
 
   @Get(':id')

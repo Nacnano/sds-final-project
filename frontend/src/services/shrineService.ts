@@ -31,8 +31,14 @@ export const shrineService = {
     return response.data;
   },
 
-  async delete(id: string): Promise<Shrine> {
-    const response = await api.delete<Shrine>(`/shrines/${id}`);
-    return response.data;
+  async delete(id: string): Promise<void> {
+    await api.delete(`/shrines/${id}`);
+  },
+
+  async findNearby(location: string, radius: number): Promise<Shrine[]> {
+    const response = await api.get<{ shrines: Shrine[] }>('/shrines/nearby/search', {
+      params: { location, radius },
+    });
+    return response.data.shrines;
   },
 };
