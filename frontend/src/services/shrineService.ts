@@ -36,9 +36,15 @@ export const shrineService = {
   },
 
   async findNearby(location: string, radius: number): Promise<Shrine[]> {
-    const response = await api.get<{ shrines: Shrine[] }>('/shrines/nearby/search', {
-      params: { location, radius },
-    });
-    return response.data.shrines;
+    try {
+      const response = await api.get<{ shrines: Shrine[] }>('/shrines/nearby/search', {
+        params: { location, radius },
+      });
+      // Ensure we always return an array, even if the response is empty or malformed
+      return Array.isArray(response.data?.shrines) ? response.data.shrines : [];
+    } catch (error) {
+      console.error('Error in shrineService.findNearby:', error);
+      return [];
+    }
   },
 };

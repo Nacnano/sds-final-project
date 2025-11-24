@@ -162,7 +162,7 @@ const Shrines: React.FC = () => {
                 value={searchRadius}
                 onChange={(e) => setSearchRadius(Number(e.target.value))}
                 min="0.1"
-                max="50"
+                max="100000"
                 step="0.1"
                 className="input-field"
               />
@@ -190,6 +190,30 @@ const Shrines: React.FC = () => {
             </div>
           </form>
         </div>
+
+        {shrines.length === 0 && !loading && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+            <p className="text-yellow-800 font-medium mb-2">
+              {isSearching || searchLocation ? '🔍 No shrines found in this area' : '📍 No shrines available'}
+            </p>
+            <p className="text-yellow-600 text-sm">
+              {isSearching || searchLocation 
+                ? 'Try searching with a different location or increase the search radius.' 
+                : 'Start by adding a shrine or use the search feature.'}
+            </p>
+            {searchLocation && (
+              <button
+                onClick={() => {
+                  setSearchLocation('');
+                  fetchShrines();
+                }}
+                className="mt-4 btn-secondary"
+              >
+                View All Shrines
+              </button>
+            )}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {shrines.map((shrine) => (
