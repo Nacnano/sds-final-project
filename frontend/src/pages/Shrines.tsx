@@ -191,6 +191,14 @@ const Shrines: React.FC = () => {
           </form>
         </div>
 
+        {searchLocation && !loading && shrines.length > 0 && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <p className="text-blue-800 font-medium">
+              🎯 Found {shrines.length} shrine{shrines.length !== 1 ? 's' : ''} within {searchRadius} km of "{searchLocation}"
+            </p>
+          </div>
+        )}
+
         {shrines.length === 0 && !loading && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
             <p className="text-yellow-800 font-medium mb-2">
