@@ -161,8 +161,9 @@ const Shrines: React.FC = () => {
                 type="number"
                 value={searchRadius}
                 onChange={(e) => setSearchRadius(Number(e.target.value))}
-                min="1"
+                min="0.1"
                 max="50"
+                step="0.1"
                 className="input-field"
               />
             </div>
