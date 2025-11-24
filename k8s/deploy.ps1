@@ -20,7 +20,7 @@ kubectl apply -f k8s/rabbitmq.yaml
 
 # Wait for databases to be ready
 Write-Host "`n5. Waiting for databases to be ready..." -ForegroundColor Yellow
-Start-Sleep -Seconds 30
+Start-Sleep -Seconds 10
 
 # 6. Deploy microservices
 Write-Host "`n6. Deploying microservices..." -ForegroundColor Yellow
@@ -29,7 +29,7 @@ kubectl apply -f k8s/location-service.yaml
 
 # Wait for services to be ready
 Write-Host "`n7. Waiting for services to be ready..." -ForegroundColor Yellow
-Start-Sleep -Seconds 20
+Start-Sleep -Seconds 10
 
 # 8. Deploy API Gateway
 Write-Host "`n8. Deploying API Gateway..." -ForegroundColor Yellow
@@ -55,7 +55,9 @@ Write-Host "`n12. Seeding databases..." -ForegroundColor Yellow
 Write-Host "`nDeployment complete!" -ForegroundColor Green
 Write-Host "`nTo access the services:" -ForegroundColor Cyan
 Write-Host "- API Gateway: http://localhost:30000" -ForegroundColor White
+Write-Host "- Frontend: http://localhost:30002" -ForegroundColor White
 Write-Host "- pgAdmin: http://localhost:30080" -ForegroundColor White
+Write-Host "- Metrics Server: (Internal only, check logs)" -ForegroundColor Gray
 Write-Host "`nTo view logs:" -ForegroundColor Cyan
 Write-Host "kubectl logs -n microservices -l app=<service-name>" -ForegroundColor White
 Write-Host "`nTo view pods:" -ForegroundColor Cyan

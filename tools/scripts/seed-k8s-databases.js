@@ -17,27 +17,6 @@ const databases = {
     password: process.env.SHRINE_DB_PASSWORD || 'postgres',
     database: process.env.SHRINE_DB_NAME || 'shrine_service',
   },
-  user: {
-    host: process.env.USER_DB_HOST || 'user-db',
-    port: parseInt(process.env.USER_DB_PORT || '5432'),
-    user: process.env.USER_DB_USER || 'postgres',
-    password: process.env.USER_DB_PASSWORD || 'postgres',
-    database: process.env.USER_DB_NAME || 'user_service',
-  },
-  wishing: {
-    host: process.env.WISHING_DB_HOST || 'wishing-db',
-    port: parseInt(process.env.WISHING_DB_PORT || '5432'),
-    user: process.env.WISHING_DB_USER || 'postgres',
-    password: process.env.WISHING_DB_PASSWORD || 'postgres',
-    database: process.env.WISHING_DB_NAME || 'wishing_service',
-  },
-  rating: {
-    host: process.env.RATING_DB_HOST || 'rating-db',
-    port: parseInt(process.env.RATING_DB_PORT || '5432'),
-    user: process.env.RATING_DB_USER || 'postgres',
-    password: process.env.RATING_DB_PASSWORD || 'postgres',
-    database: process.env.RATING_DB_NAME || 'rating_service',
-  },
 };
 
 // Seed data
@@ -163,169 +142,41 @@ const shrineData = [
   },
 ];
 
-const userData = [
-  {
-    id: '7731a1b2-c4d5-46f7-a8b9-c0d100000001',
-    email: 'john.doe@example.com',
-    role: 'user',
-    password_hash:
-      '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', // password: "password123"
-  },
-  {
-    id: '7731a1b2-c4d5-46f7-a8b9-c0d100000002',
-    email: 'jane.smith@example.com',
-    role: 'user',
-    password_hash:
-      '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW',
-  },
-  {
-    id: '7731a1b2-c4d5-46f7-a8b9-c0d100000003',
-    email: 'admin@shrine.com',
-    role: 'admin',
-    password_hash:
-      '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW',
-  },
-  {
-    id: '7731a1b2-c4d5-46f7-a8b9-c0d100000004',
-    email: 'alice.wonder@example.com',
-    role: 'user',
-    password_hash:
-      '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW',
-  },
-  {
-    id: '7731a1b2-c4d5-46f7-a8b9-c0d100000005',
-    email: 'bob.builder@example.com',
-    role: 'user',
-    password_hash:
-      '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW',
-  },
-];
+async function seedShrines(client) {
+  // Check if data exists
+  const res = await client.query('SELECT COUNT(*) FROM shrines');
+  const count = parseInt(res.rows[0].count);
 
-const wishData = [
-  {
-    id: '6731a1b2c4d5e6f7a8b9c1d1',
-    wisherId: '7731a1b2-c4d5-46f7-a8b9-c0d100000001',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d1',
-    description: 'I wish for success in my new business venture',
-    public: true,
-    category: 'career',
-  },
-  {
-    id: '6731a1b2c4d5e6f7a8b9c1d2',
-    wisherId: '7731a1b2-c4d5-46f7-a8b9-c0d100000002',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d4',
-    description: 'I wish to find true love this year',
-    public: true,
-    category: 'love',
-  },
-  {
-    id: '6731a1b2c4d5e6f7a8b9c1d3',
-    wisherId: '7731a1b2-c4d5-46f7-a8b9-c0d100000003',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d2',
-    description: 'I wish to pass my university exams',
-    public: false,
-    category: 'education',
-  },
-  {
-    id: '6731a1b2c4d5e6f7a8b9c1d4',
-    wisherId: '7731a1b2-c4d5-46f7-a8b9-c0d100000004',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d3',
-    description: 'I wish for inner peace and enlightenment',
-    public: true,
-    category: 'spiritual',
-  },
-  {
-    id: '6731a1b2c4d5e6f7a8b9c1d5',
-    wisherId: '7731a1b2-c4d5-46f7-a8b9-c0d100000005',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d6',
-    description: 'I wish for financial stability',
-    public: false,
-    category: 'wealth',
-  },
-  {
-    id: '6731a1b2c4d5e6f7a8b9c1d6',
-    wisherId: '7731a1b2-c4d5-46f7-a8b9-c0d100000001',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d5',
-    description: 'I wish for good health for my family',
-    public: true,
-    category: 'health',
-  },
-];
+  if (count > 0) {
+    console.log(`   ⚠️  Shrines table already has ${count} records. Skipping seed.`);
+    return;
+  }
 
-const ratingData = [
-  {
-    userId: '7731a1b2-c4d5-46f7-a8b9-c0d100000001',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d1',
-    rating: 5,
-    review: 'Absolutely amazing! My business wish came true within 3 months!',
-    isAnonymous: false,
-  },
-  {
-    userId: '7731a1b2-c4d5-46f7-a8b9-c0d100000002',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d1',
-    rating: 4,
-    review:
-      'Beautiful shrine, very peaceful atmosphere. Still waiting for my wish.',
-    isAnonymous: false,
-  },
-  {
-    userId: '7731a1b2-c4d5-46f7-a8b9-c0d100000003',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d2',
-    rating: 5,
-    review: 'Helped me overcome obstacles in my studies. Highly recommended!',
-    isAnonymous: false,
-  },
-  {
-    userId: '7731a1b2-c4d5-46f7-a8b9-c0d100000004',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d3',
-    rating: 5,
-    review:
-      'Most sacred place in Thailand. The spiritual energy is incredible.',
-    isAnonymous: false,
-  },
-  {
-    userId: '7731a1b2-c4d5-46f7-a8b9-c0d100000005',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d4',
-    rating: 5,
-    review: 'Found my soulmate after visiting! Thank you!',
-    isAnonymous: true,
-  },
-  {
-    userId: '7731a1b2-c4d5-46f7-a8b9-c0d100000001',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d5',
-    rating: 4,
-    review: 'Nice shrine in the heart of Bangkok. Very accessible.',
-    isAnonymous: false,
-  },
-  {
-    userId: '7731a1b2-c4d5-46f7-a8b9-c0d100000002',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d6',
-    rating: 5,
-    review: 'Great for meditation. The view from the top is breathtaking!',
-    isAnonymous: false,
-  },
-  {
-    userId: '7731a1b2-c4d5-46f7-a8b9-c0d100000003',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d7',
-    rating: 5,
-    review: 'Must visit at sunset! Absolutely stunning temple.',
-    isAnonymous: false,
-  },
-  {
-    userId: '7731a1b2-c4d5-46f7-a8b9-c0d100000004',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d8',
-    rating: 4,
-    review: 'Very popular shrine, can get crowded during peak hours.',
-    isAnonymous: false,
-  },
-  {
-    userId: '7731a1b2-c4d5-46f7-a8b9-c0d100000005',
-    shrineId: '6731a1b2c4d5e6f7a8b9c0d9',
-    rating: 5,
-    review: 'Beautiful marble architecture. Perfect for quiet contemplation.',
-    isAnonymous: false,
-  },
-];
+  console.log('   Inserting shrines...');
+
+  // Note: Assuming standard TypeORM naming (snake_case) for created_at/updated_at
+  // and explicit column name for image_url.
+  // ID is required as it's not auto-generated in DB.
+  const query = `
+    INSERT INTO shrines (id, name, description, location, category, lat, lng, image_url, created_at, updated_at)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+  `;
+
+  for (const shrine of shrineData) {
+    await client.query(query, [
+      shrine.id,
+      shrine.name,
+      shrine.description,
+      shrine.location,
+      shrine.category,
+      shrine.latitude,
+      shrine.longitude,
+      shrine.imageUrl || null,
+    ]);
+  }
+  
+  console.log(`   ✅ Inserted ${shrineData.length} shrines`);
+}
 
 async function seedDatabase(dbName, config, seedFunction) {
   const client = new Client(config);
@@ -348,100 +199,6 @@ async function seedDatabase(dbName, config, seedFunction) {
   }
 }
 
-async function seedShrines(client) {
-  // Clear existing data
-  await client.query('TRUNCATE TABLE shrines CASCADE');
-
-  // Insert shrines
-  for (const shrine of shrineData) {
-    await client.query(
-      `INSERT INTO shrines (id, name, description, location, lat, lng, category, image_url, "createdAt", "updatedAt")
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
-       ON CONFLICT (id) DO NOTHING`,
-      [
-        shrine.id,
-        shrine.name,
-        shrine.description,
-        shrine.location,
-        shrine.latitude || null,
-        shrine.longitude || null,
-        shrine.category || null,
-        shrine.imageUrl || null,
-      ],
-    );
-  }
-
-  const result = await client.query('SELECT COUNT(*) FROM shrines');
-  console.log(`   Inserted ${result.rows[0].count} shrines`);
-}
-
-async function seedUsers(client) {
-  // Clear existing data
-  await client.query('TRUNCATE TABLE users CASCADE');
-
-  // Insert users
-  for (const user of userData) {
-    await client.query(
-      `INSERT INTO users (id, email, role, password_hash, "createdAt", "updatedAt")
-       VALUES ($1, $2, $3, $4, NOW(), NOW())
-       ON CONFLICT (id) DO NOTHING`,
-      [user.id, user.email, user.role, user.password_hash],
-    );
-  }
-
-  const result = await client.query('SELECT COUNT(*) FROM users');
-  console.log(`   Inserted ${result.rows[0].count} users`);
-  console.log(`   Default password for all users: "password123"`);
-}
-
-async function seedWishes(client) {
-  // Clear existing data
-  await client.query('TRUNCATE TABLE wishes CASCADE');
-
-  // Insert wishes
-  for (const wish of wishData) {
-    await client.query(
-      `INSERT INTO wishes (id, "wisherId", "shrineId", description, category, public, "createdAt", "updatedAt")
-       VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`,
-      [
-        wish.id,
-        wish.wisherId,
-        wish.shrineId,
-        wish.description,
-        wish.category,
-        wish.public,
-      ],
-    );
-  }
-
-  const result = await client.query('SELECT COUNT(*) FROM wishes');
-  console.log(`   Inserted ${result.rows[0].count} wishes`);
-}
-
-async function seedRatings(client) {
-  // Clear existing data
-  await client.query('TRUNCATE TABLE ratings CASCADE');
-
-  // Insert ratings
-  for (const rating of ratingData) {
-    await client.query(
-      `INSERT INTO ratings (user_id, shrine_id, rating, review, is_anonymous, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
-       ON CONFLICT (user_id, shrine_id) DO NOTHING`,
-      [
-        rating.userId,
-        rating.shrineId,
-        rating.rating,
-        rating.review,
-        rating.isAnonymous,
-      ],
-    );
-  }
-
-  const result = await client.query('SELECT COUNT(*) FROM ratings');
-  console.log(`   Inserted ${result.rows[0].count} ratings`);
-}
-
 async function main() {
   console.log('🌱 Starting Kubernetes database seeding...\n');
   console.log('='.repeat(60));
@@ -449,20 +206,11 @@ async function main() {
   try {
     // Seed all databases
     await seedDatabase('Shrine Database', databases.shrine, seedShrines);
-    await seedDatabase('User Database', databases.user, seedUsers);
-    await seedDatabase('Wishing Database', databases.wishing, seedWishes);
-    await seedDatabase('Rating Database', databases.rating, seedRatings);
 
     console.log('\n' + '='.repeat(60));
     console.log('✅ All databases seeded successfully!');
     console.log('\n📊 Summary:');
     console.log(`   - Shrines: ${shrineData.length}`);
-    console.log(`   - Users: ${userData.length}`);
-    console.log(`   - Wishes: ${wishData.length}`);
-    console.log(`   - Ratings: ${ratingData.length}`);
-    console.log('\n🔑 Test User Credentials:');
-    console.log('   Email: john.doe@example.com');
-    console.log('   Password: password123');
     console.log('\n🚀 You can now test the services!');
   } catch (error) {
     console.error('\n❌ Seeding failed:', error.message);

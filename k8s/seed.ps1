@@ -82,7 +82,7 @@ function Seed-Service {
     
     # Execute the seed script
     Write-Host "   Executing seed script..." -ForegroundColor Gray
-    kubectl exec -n $NAMESPACE $pod -- node /app/seed-k8s-databases.js
+    kubectl exec -n $NAMESPACE $pod -- node /app/seed-k8s-databases.js | Out-Host
     
     if ($LASTEXITCODE -eq 0) {
         Write-Host "   SUCCESS: $DisplayName seeded successfully" -ForegroundColor Green
