@@ -120,13 +120,6 @@ if ($success) {
     Write-Host ""
     Write-Host "Summary:" -ForegroundColor Cyan
     Write-Host "   - Shrines: seeded in shrine-db" -ForegroundColor Gray
-    Write-Host "   - Users: seeded in user-db" -ForegroundColor Gray
-    Write-Host "   - Wishes: seeded in wishing-db" -ForegroundColor Gray
-    Write-Host "   - Ratings: seeded in rating-db" -ForegroundColor Gray
-    Write-Host ""
-    Write-Host "Test User Credentials:" -ForegroundColor Cyan
-    Write-Host "   Email: john.doe@example.com" -ForegroundColor Gray
-    Write-Host "   Password: password123" -ForegroundColor Gray
     Write-Host ""
     Write-Host "You can now test the services!" -ForegroundColor Green
 } else {

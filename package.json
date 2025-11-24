@@ -26,7 +26,8 @@
     "k8s:deploy": "powershell -ExecutionPolicy Bypass -File ./k8s/deploy.ps1",
     "k8s:delete": "powershell -ExecutionPolicy Bypass -File ./k8s/delete.ps1",
     "k8s:seed": "powershell -ExecutionPolicy Bypass -File ./k8s/seed.ps1",
-    "db:seed:all": "node tools/scripts/seed-all-databases.js"
+    "db:seed:all": "node tools/scripts/seed-all-databases.js",
+    "db:seed:shrines": "node tools/scripts/seed-shrines.js"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.8.0",

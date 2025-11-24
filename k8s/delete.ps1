@@ -9,21 +9,13 @@ Write-Host "`n2. Deleting API Gateway..." -ForegroundColor Yellow
 kubectl delete -f k8s/api-gateway.yaml
 
 Write-Host "`n3. Deleting microservices..." -ForegroundColor Yellow
-kubectl delete -f k8s/wishing-service.yaml
-kubectl delete -f k8s/shrine-discovery-service.yaml
-kubectl delete -f k8s/rating-service.yaml
 kubectl delete -f k8s/location-service.yaml
-kubectl delete -f k8s/technique-service.yaml
-kubectl delete -f k8s/user-service.yaml
 kubectl delete -f k8s/shrine-service.yaml
 
 Write-Host "`n4. Deleting RabbitMQ..." -ForegroundColor Yellow
 kubectl delete -f k8s/rabbitmq.yaml
 
 Write-Host "`n5. Deleting databases..." -ForegroundColor Yellow
-kubectl delete -f k8s/rating-db.yaml
-kubectl delete -f k8s/wishing-db.yaml
-kubectl delete -f k8s/user-db.yaml
 kubectl delete -f k8s/shrine-db.yaml
 
 Write-Host "`n6. Deleting ConfigMap and Secrets..." -ForegroundColor Yellow
