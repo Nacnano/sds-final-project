@@ -2,8 +2,8 @@
 
 echo -e "\e[31mDeleting all Kubernetes resources...\e[0m"
 
-echo -e "\n\e[33m1. Deleting pgAdmin...\e[0m"
-kubectl delete -f k8s/pgadmin.yaml
+# echo -e "\n\e[33m1. Deleting pgAdmin...\e[0m"
+# kubectl delete -f k8s/pgadmin.yaml
 
 echo -e "\n\e[33m2. Deleting API Gateway...\e[0m"
 kubectl delete -f k8s/api-gateway.yaml
