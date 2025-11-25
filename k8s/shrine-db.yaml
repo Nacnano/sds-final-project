@@ -29,6 +29,24 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/arch: arm64
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: shrine-db
+                topologyKey: kubernetes.io/hostname
+      tolerations:
+        - key: "node.kubernetes.io/unreachable"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 300
+        - key: "node.kubernetes.io/not-ready"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 300
       containers:
         - name: postgres
           image: postgres:15-alpine
