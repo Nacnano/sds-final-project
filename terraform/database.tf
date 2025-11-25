@@ -1,10 +1,7 @@
 # Shrine Database PVC
-import {
-  to = kubernetes_persistent_volume_claim.shrine_db
-  id = "microservices/shrine-db-pvc"
-}
-
 resource "kubernetes_persistent_volume_claim" "shrine_db" {
+  wait_until_bound = false
+
   metadata {
     name      = "shrine-db-pvc"
     namespace = kubernetes_namespace.microservices.metadata[0].name
