@@ -3,20 +3,20 @@ Write-Host "Deploying Kubernetes resources..." -ForegroundColor Green
 
 # 1. Create namespace
 Write-Host "`n1. Creating namespace..." -ForegroundColor Yellow
-kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s-local/namespace.yaml
 
 # 2. Create ConfigMap and Secrets
 Write-Host "`n2. Creating ConfigMap and Secrets..." -ForegroundColor Yellow
-kubectl apply -f k8s/configmap.yaml
-kubectl apply -f k8s/secrets.yaml
+kubectl apply -f k8s-local/configmap.yaml
+kubectl apply -f k8s-local/secrets.yaml
 
 # 3. Deploy databases
 Write-Host "`n3. Deploying databases..." -ForegroundColor Yellow
-kubectl apply -f k8s/shrine-db.yaml
+kubectl apply -f k8s-local/shrine-db.yaml
 
 # 4. Deploy RabbitMQ
 Write-Host "`n4. Deploying RabbitMQ..." -ForegroundColor Yellow
-kubectl apply -f k8s/rabbitmq.yaml
+kubectl apply -f k8s-local/rabbitmq.yaml
 
 # Wait for databases to be ready
 Write-Host "`n5. Waiting for databases to be ready..." -ForegroundColor Yellow
@@ -24,8 +24,8 @@ Start-Sleep -Seconds 5
 
 # 6. Deploy microservices
 Write-Host "`n6. Deploying microservices..." -ForegroundColor Yellow
-kubectl apply -f k8s/shrine-service.yaml
-kubectl apply -f k8s/location-service.yaml
+kubectl apply -f k8s-local/shrine-service.yaml
+kubectl apply -f k8s-local/location-service.yaml
 
 # Wait for services to be ready
 Write-Host "`n7. Waiting for services to be ready..." -ForegroundColor Yellow
@@ -33,16 +33,16 @@ Start-Sleep -Seconds 5
 
 # 8. Deploy API Gateway
 Write-Host "`n8. Deploying API Gateway..." -ForegroundColor Yellow
-kubectl apply -f k8s/api-gateway.yaml
+kubectl apply -f k8s-local/api-gateway.yaml
 
 # 9. Deploy Metrics Server (for HPA)
 Write-Host "`n9. Deploying Metrics Server..." -ForegroundColor Yellow
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
-k8s/patch-metrics-server.ps1
+k8s-local/patch-metrics-server.ps1
 
 # 10. Deploy pgAdmin (optional)
 Write-Host "`n10. Deploying pgAdmin..." -ForegroundColor Yellow
-kubectl apply -f k8s/pgadmin.yaml
+kubectl apply -f k8s-local/pgadmin.yaml
 
 # 11. Show deployment status
 Write-Host "`n11. Checking deployment status..." -ForegroundColor Yellow
@@ -50,7 +50,7 @@ kubectl get all -n microservices
 
 # 12. Seed databases
 Write-Host "`n12. Seeding databases..." -ForegroundColor Yellow
-./k8s/seed.ps1
+./k8s-local/seed.ps1
 
 Write-Host "`nDeployment complete!" -ForegroundColor Green
 Write-Host "`nTo access the services:" -ForegroundColor Cyan
