@@ -1,369 +1,232 @@
-# Terraform Deployment for K3s Cluster
+# Terraform Kubernetes Deployment
 
-This directory contains Terraform configuration files to deploy the **สาย.mu** microservices application to a K3s cluster running on Raspberry Pi worker nodes.
+This directory contains Terraform configuration for deploying the microservices application to Kubernetes.
 
-## 📋 Prerequisites
+## Prerequisites
 
-Before using this Terraform configuration:
-
-1. **K3s Cluster Running**
-   - Master node configured
-   - Raspberry Pi worker nodes joined to cluster
-   - `kubectl` configured and working
-
-2. **Docker Images Built**
-   - ARM-compatible images built using `k8s/build-arm.ps1` or `k8s/build-arm.sh`
-   - Images pushed to local registry or Docker Hub
-
-3. **Terraform Installed**
+1. **Terraform**: Install Terraform >= 1.0
    ```bash
-   # Install Terraform (if not already installed)
-   # Windows (Chocolatey):
-   choco install terraform
-   
-   # macOS (Homebrew):
-   brew install terraform
-   
-   # Linux:
-   wget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip
-   unzip terraform_1.6.0_linux_amd64.zip
-   sudo mv terraform /usr/local/bin/
+   # Ubuntu/Debian
+   wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+   echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+   sudo apt update && sudo apt install terraform
    ```
 
-4. **Kubeconfig Access**
-   - Ensure `~/.kube/config` has access to your K3s cluster
-   - Or set `KUBECONFIG` environment variable
+2. **kubectl**: Configured with access to your Kubernetes cluster
 
-## 🚀 Quick Start
+3. **Docker Images**: Built and pushed to your registry
 
-### 1. Initialize Terraform
+## Configuration
 
-```bash
-cd terraform
-terraform init
-```
+1. **Create terraform.tfvars** (optional):
+   ```bash
+   cp terraform.tfvars.example terraform.tfvars
+   # Edit terraform.tfvars with your values
+   ```
 
-This will download the Kubernetes provider plugin.
+2. **Configure Variables**:
+   - `namespace`: Kubernetes namespace (default: microservices)
+   - `kube_context`: Kubernetes context to use
+   - `registry_url`: Docker registry URL
+   - `node_hostname`: Node hostname for database placement
+   - `postgres_user` and `postgres_password`: Database credentials
+   - `jwt_secret`: JWT secret for authentication
+   - Replica counts for services
 
-### 2. Configure Variables (Optional)
+## Quick Start
 
-Copy the example variables file and customize:
-
-```bash
-cp terraform.tfvars.example terraform.tfvars
-# Edit terraform.tfvars with your values
-```
-
-**Key variables to customize:**
-- `docker_registry`: Your Docker registry URL (e.g., `192.168.0.106:5000`)
-- `master_node_hostname`: Your master node hostname
-- `postgres_password`: Database password
-- `jwt_secret`: JWT secret for authentication
-
-### 3. Review Deployment Plan
-
-```bash
-terraform plan
-```
-
-This shows what resources will be created without making any changes.
-
-### 4. Deploy to Cluster
-
-```bash
-terraform apply
-```
-
-Type `yes` when prompted to confirm deployment.
-
-**Expected deployment time**: 2-5 minutes
-
-### 5. Verify Deployment
-
-```bash
-# Check all pods are running
-kubectl get pods -n microservices
-
-# Check services
-kubectl get svc -n microservices
-
-# Check HPA
-kubectl get hpa -n microservices
-```
-
-### 6. Access the Application
-
-After successful deployment:
-
-- **API Gateway**: `http://<master-node-ip>:30000`
-- **Frontend**: `http://<master-node-ip>:30002`
-
-Replace `<master-node-ip>` with your master node's IP address (e.g., `192.168.0.106`).
-
-**Test API:**
-```bash
-curl http://192.168.0.106:30000/shrines
-```
-
-## 📂 File Structure
-
-```
-terraform/
-├── versions.tf              # Terraform and provider versions
-├── variables.tf             # Variable definitions
-├── main.tf                  # Provider, namespace, ConfigMap, Secrets
-├── databases.tf             # PostgreSQL and RabbitMQ
-├── services.tf              # Shrine and Location services
-├── gateway.tf               # API Gateway and Frontend
-├── outputs.tf               # Output values after deployment
-├── terraform.tfvars.example # Example variable values
-└── README.md               # This file
-```
-
-## 🔧 Configuration Details
-
-### Resources Created
-
-1. **Namespace**: `microservices`
-2. **ConfigMap**: Application configuration
-3. **Secrets**: Database credentials, JWT secret
-4. **Databases**:
-   - PostgreSQL (shrine-db) with 1Gi PVC
-   - RabbitMQ message broker
-5. **Microservices**:
-   - Location Service (2 replicas + HPA)
-   - Shrine Service (2 replicas + HPA)
-6. **Gateway & Frontend**:
-   - API Gateway (2 replicas + HPA + PDB)
-   - Frontend (2 replicas + HPA + PDB)
-
-### Default Configuration
-
-- **Replicas**: 2 per service (configurable)
-- **HPA**: Enabled, max 2 replicas (configurable)
-- **Node Selector**: `kubernetes.io/arch: arm64` (Raspberry Pi)
-- **Resource Limits**:
-  - API Gateway: 256Mi-512Mi memory, 250m-500m CPU
-  - Services: 256Mi-512Mi memory, 250m-500m CPU
-  - Frontend: 128Mi-256Mi memory, 100m-250m CPU
-
-## 📊 Terraform Commands
-
-### Basic Operations
+### Deploy All Resources
 
 ```bash
 # Initialize Terraform
 terraform init
 
-# Validate configuration
-terraform validate
-
-# Plan deployment (preview changes)
+# Plan deployment
 terraform plan
 
-# Apply changes (deploy)
+# Apply deployment
 terraform apply
 
-# Show current state
-terraform show
-
-# List managed resources
-terraform state list
-
-# Destroy all resources
-terraform destroy
+# Or use the deploy script
+bash deploy.sh
 ```
 
-### Advanced Operations
+### Deploy with Custom Variables
 
 ```bash
-# Apply with specific variable values
-terraform apply -var="docker_registry=192.168.0.106:5000"
-
-# Apply without confirmation
-terraform apply -auto-approve
-
-# Destroy without confirmation
-terraform destroy -auto-approve
-
-# Target specific resource
-terraform apply -target=kubernetes_deployment.api_gateway
-
-# View outputs
-terraform output
-
-# Format Terraform files
-terraform fmt
-
-# Refresh state
-terraform refresh
+terraform apply -var="api_gateway_replicas=3" -var="frontend_replicas=4"
 ```
 
-## 🔄 Updating Deployment
+### View Outputs
 
-### Update Docker Images
+```bash
+terraform output
+```
 
-1. Build new images:
-   ```bash
-   cd k8s
-   ./build-arm.sh
+### Destroy Resources
+
+```bash
+terraform destroy
+
+# Or use the destroy script
+bash destroy.sh
+```
+
+## File Structure
+
+- `main.tf`: Provider configuration and namespace
+- `variables.tf`: Input variable definitions
+- `outputs.tf`: Output definitions
+- `config.tf`: ConfigMap and Secrets
+- `database.tf`: PostgreSQL database resources
+- `rabbitmq.tf`: RabbitMQ message broker resources
+- `services.tf`: Shrine and Location microservices
+- `gateway-frontend.tf`: API Gateway and Frontend resources
+- `deploy.sh`: Deployment script
+- `destroy.sh`: Destroy script
+
+## Deployment Order
+
+Terraform automatically handles dependencies:
+
+1. Namespace creation
+2. ConfigMap and Secrets
+3. Database (PostgreSQL) and RabbitMQ
+4. Microservices (Shrine Service, Location Service)
+5. API Gateway
+6. Frontend
+
+## Managing State
+
+Terraform state is stored locally by default in `terraform.tfstate`. For production:
+
+1. **Use Remote State** (recommended):
+   ```hcl
+   terraform {
+     backend "s3" {
+       bucket = "your-terraform-state"
+       key    = "microservices/terraform.tfstate"
+       region = "us-east-1"
+     }
+   }
    ```
 
-2. Restart deployments to pull new images:
+2. **Backup State Files**:
    ```bash
-   kubectl rollout restart deployment/api-gateway -n microservices
-   kubectl rollout restart deployment/shrine-service -n microservices
-   kubectl rollout restart deployment/location-service -n microservices
-   kubectl rollout restart deployment/frontend -n microservices
+   cp terraform.tfstate terraform.tfstate.backup
    ```
 
-### Update Configuration
-
-1. Edit `terraform.tfvars` or modify variables
-2. Run `terraform apply`
-3. Terraform will update only changed resources
+## Common Operations
 
 ### Scale Services
 
-Edit `terraform.tfvars`:
-```hcl
-api_gateway_replicas = 3
-shrine_service_replicas = 3
+```bash
+# Edit variables.tf or terraform.tfvars
+# Then apply
+terraform apply -var="api_gateway_replicas=5"
 ```
 
-Then apply:
+### Update Image
+
 ```bash
+# Images are pulled with imagePullPolicy: Always
+# Just apply to restart pods
+terraform apply -replace="kubernetes_deployment.api_gateway"
+```
+
+### View Resources
+
+```bash
+# Show all resources
+terraform state list
+
+# Show specific resource
+terraform state show kubernetes_deployment.api_gateway
+```
+
+### Import Existing Resources
+
+```bash
+terraform import kubernetes_namespace.microservices microservices
+```
+
+## Troubleshooting
+
+### View Terraform Plan
+
+```bash
+terraform plan -out=tfplan
+terraform show tfplan
+```
+
+### Debug Provider Issues
+
+```bash
+export TF_LOG=DEBUG
 terraform apply
 ```
 
-## 🧹 Cleanup
-
-### Remove All Resources
+### Force Resource Recreation
 
 ```bash
-terraform destroy
+terraform taint kubernetes_deployment.api_gateway
+terraform apply
 ```
 
-This will:
-- Delete all deployments
-- Delete all services
-- Delete ConfigMap and Secrets
-- Delete PVCs (data will be lost!)
-- Delete namespace
-
-### Selective Cleanup
+### Check Kubernetes Resources
 
 ```bash
-# Remove only specific resources
-terraform destroy -target=kubernetes_deployment.frontend
+kubectl get all -n microservices
+kubectl describe pod <pod-name> -n microservices
+kubectl logs <pod-name> -n microservices
 ```
 
-## 🐛 Troubleshooting
+## Comparison with deploy-vm.sh
 
-### Issue: `terraform init` fails
+| Feature | deploy-vm.sh | Terraform |
+|---------|--------------|-----------|
+| State Management | None | Yes (terraform.tfstate) |
+| Idempotent | No | Yes |
+| Dependency Management | Manual (sleep) | Automatic |
+| Resource Updates | Replace all | Incremental |
+| Rollback | Manual | terraform state |
+| Variable Management | Hardcoded | Variables file |
+| Preview Changes | No | terraform plan |
 
-**Solution**: Ensure you have internet connectivity to download providers.
+## Migration from deploy-vm.sh
 
-### Issue: `Error: Kubernetes cluster unreachable`
+The Terraform configuration replicates all functionality from `deploy-vm.sh`:
 
-**Solution**:
-```bash
-# Verify kubectl works
-kubectl cluster-info
+- ✅ Namespace creation
+- ✅ ConfigMap and Secrets
+- ✅ Database deployment (PostgreSQL)
+- ✅ RabbitMQ deployment
+- ✅ Microservices deployment
+- ✅ API Gateway deployment
+- ✅ Frontend deployment
+- ✅ HPA (Horizontal Pod Autoscaler)
+- ✅ PDB (Pod Disruption Budget)
+- ✅ Node selectors and tolerations
+- ✅ Resource limits and requests
 
-# Check kubeconfig path
-echo $KUBECONFIG
+## Next Steps
 
-# Or specify path directly
-export KUBECONFIG=~/.kube/config
-```
-
-### Issue: Pods stuck in `Pending` state
-
-**Solutions**:
-1. Check node resources:
+1. Deploy metrics server:
    ```bash
-   kubectl top nodes
-   kubectl describe nodes
+   kubectl apply -f ../k8s/components.yaml
+   bash ../k8s/patch-metrics-server.sh
    ```
 
-2. Check events:
+2. Seed database:
    ```bash
-   kubectl get events -n microservices --sort-by='.lastTimestamp'
+   bash ../k8s/seed.sh
    ```
 
-3. Reduce resource requests in `variables.tf`
-
-### Issue: Image pull errors
-
-**Solutions**:
-1. Verify images exist in registry:
+3. Monitor deployment:
    ```bash
-   curl http://192.168.0.106:5000/v2/_catalog
+   watch kubectl get pods -n microservices
    ```
 
-2. Check if registry is accessible from Pi nodes:
-   ```bash
-   ssh pi-node-1
-   docker pull 192.168.0.106:5000/shrine-service:latest
-   ```
+## Support
 
-3. Verify `insecure-registries` in `/etc/docker/daemon.json`
-
-### Issue: Database pod won't start
-
-**Solutions**:
-1. Check PVC status:
-   ```bash
-   kubectl get pvc -n microservices
-   ```
-
-2. Verify node has storage:
-   ```bash
-   kubectl describe pvc shrine-db-pvc -n microservices
-   ```
-
-3. Check master node disk space:
-   ```bash
-   df -h
-   ```
-
-## 📝 Notes
-
-- **State Management**: Terraform state is stored locally in `terraform.tfstate`. Back this up if needed.
-- **Secrets**: Never commit `terraform.tfvars` with real credentials to git.
-- **Dependencies**: Terraform handles resource dependencies automatically.
-- **Idempotent**: You can run `terraform apply` multiple times safely.
-
-## 🔗 Related Documentation
-
-- [Kubernetes Deployment Guide](../k8s/README.md)
-- [Raspberry Pi Setup Guide](../RASPBERRY_PI_COMPLETE_GUIDE.md)
-- [Main Project README](../README.md)
-- [Terraform Kubernetes Provider Docs](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs)
-
-## 🎯 Comparison with Shell Script
-
-This Terraform configuration replaces `k8s/deploy-vm.sh` with benefits:
-
-| Feature | Shell Script | Terraform |
-|---------|-------------|-----------|
-| **Idempotent** | ❌ No | ✅ Yes |
-| **State Tracking** | ❌ No | ✅ Yes |
-| **Dependency Management** | ⚠️ Manual | ✅ Automatic |
-| **Rollback** | ❌ Manual | ✅ Easy |
-| **Configuration** | ⚠️ Hardcoded | ✅ Variables |
-| **Validation** | ❌ Runtime only | ✅ Pre-deployment |
-
-## 🤝 Contributing
-
-When modifying Terraform files:
-
-1. Run `terraform fmt` to format code
-2. Run `terraform validate` to check syntax
-3. Test on development cluster first
-4. Document variable changes in README
-
----
-
-**Need help?** Check the troubleshooting section or project documentation.
+For issues or questions, refer to the main project documentation or check the Kubernetes dashboard.

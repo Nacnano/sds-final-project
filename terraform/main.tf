@@ -1,54 +1,38 @@
-# Provider configuration
+terraform {
+  required_version = ">= 1.0"
+  
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.38.0"
+    }
+  }
+}
+
+# Load kubeconfig to get host and user credentials
+locals {
+  kubeconfig       = yamldecode(file(pathexpand("~/.kube/config")))
+  current_context  = var.kube_context
+  context          = [for c in local.kubeconfig.contexts : c if c.name == local.current_context][0]
+  cluster_name     = local.context.context.cluster
+  cluster          = [for c in local.kubeconfig.clusters : c if c.name == local.cluster_name][0]
+  user_name        = local.context.context.user
+  user             = [for u in local.kubeconfig.users : u if u.name == local.user_name][0]
+}
+
 provider "kubernetes" {
-  config_path = var.kubeconfig_path
+  host                   = local.cluster.cluster.server
+  cluster_ca_certificate = file("${path.module}/k3s-server-ca.crt")
+  client_certificate     = file("${path.module}/client.crt")
+  client_key             = file("${path.module}/client.key")
 }
 
 # Namespace
 resource "kubernetes_namespace" "microservices" {
   metadata {
     name = var.namespace
+    labels = {
+      name = var.namespace
+    }
   }
-}
-
-# ConfigMap
-resource "kubernetes_config_map" "microservices_config" {
-  metadata {
-    name      = "microservices-config"
-    namespace = kubernetes_namespace.microservices.metadata[0].name
-  }
-
-  data = {
-    NODE_ENV                = "production"
-    RABBITMQ_URL            = "amqp://rabbitmq:5672"
-    RABBITMQ_DEFAULT_USER   = "guest"
-    RABBITMQ_DEFAULT_PASS   = "guest"
-    SHRINE_DATABASE_HOST    = "shrine-db"
-    SHRINE_DATABASE_PORT    = "5432"
-    SHRINE_SERVICE_URL      = "shrine-service:5001"
-    LOCATION_SERVICE_URL    = "location-service:5006"
-    GATEWAY_PORT            = "3000"
-    SHRINE_GRPC_PORT        = "5001"
-    LOCATION_GRPC_PORT      = "5006"
-    FRONTEND_URL            = "http://localhost:30002"
-  }
-}
-
-# Secrets
-resource "kubernetes_secret" "microservices_secrets" {
-  metadata {
-    name      = "microservices-secrets"
-    namespace = kubernetes_namespace.microservices.metadata[0].name
-  }
-
-  data = {
-    POSTGRES_USER         = base64encode(var.postgres_user)
-    POSTGRES_PASSWORD     = base64encode(var.postgres_password)
-    DATABASE_USER         = base64encode(var.postgres_user)
-    DATABASE_PASSWORD     = base64encode(var.postgres_password)
-    JWT_SECRET           = base64encode(var.jwt_secret)
-    PGADMIN_DEFAULT_EMAIL    = base64encode("admin@example.com")
-    PGADMIN_DEFAULT_PASSWORD = base64encode("admin")
-  }
-
-  type = "Opaque"
 }

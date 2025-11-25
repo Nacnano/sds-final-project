@@ -34,10 +34,23 @@ resource "kubernetes_deployment" "api_gateway" {
 
       spec {
         node_selector = {
-          "kubernetes.io/arch" = var.worker_node_arch
+          "kubernetes.io/arch" = "arm64"
         }
 
-        # Anti-affinity for spreading pods
+        toleration {
+          key                = "node.kubernetes.io/unreachable"
+          operator           = "Exists"
+          effect             = "NoExecute"
+          toleration_seconds = 5
+        }
+
+        toleration {
+          key                = "node.kubernetes.io/not-ready"
+          operator           = "Exists"
+          effect             = "NoExecute"
+          toleration_seconds = 5
+        }
+
         affinity {
           pod_anti_affinity {
             preferred_during_scheduling_ignored_during_execution {
@@ -56,24 +69,9 @@ resource "kubernetes_deployment" "api_gateway" {
           }
         }
 
-        # Tolerations for node failures
-        toleration {
-          key                = "node.kubernetes.io/unreachable"
-          operator           = "Exists"
-          effect             = "NoExecute"
-          toleration_seconds = 5
-        }
-
-        toleration {
-          key                = "node.kubernetes.io/not-ready"
-          operator           = "Exists"
-          effect             = "NoExecute"
-          toleration_seconds = 5
-        }
-
         container {
-          name  = "api-gateway"
-          image = "${var.docker_registry}/api-gateway:${var.image_tag}"
+          name              = "api-gateway"
+          image             = "${var.registry_url}/api-gateway:latest"
           image_pull_policy = "Always"
 
           port {
@@ -190,7 +188,7 @@ resource "kubernetes_service" "api_gateway" {
 
   spec {
     selector = {
-      app = "api-gateway"
+      app = kubernetes_deployment.api_gateway.spec[0].template[0].metadata[0].labels.app
     }
 
     port {
@@ -201,12 +199,10 @@ resource "kubernetes_service" "api_gateway" {
 
     type = "NodePort"
   }
-
-  depends_on = [kubernetes_deployment.api_gateway]
 }
 
 # API Gateway PDB
-resource "kubernetes_pod_disruption_budget_v1" "api_gateway_pdb" {
+resource "kubernetes_pod_disruption_budget_v1" "api_gateway" {
   metadata {
     name      = "api-gateway-pdb"
     namespace = kubernetes_namespace.microservices.metadata[0].name
@@ -221,14 +217,10 @@ resource "kubernetes_pod_disruption_budget_v1" "api_gateway_pdb" {
       }
     }
   }
-
-  depends_on = [kubernetes_deployment.api_gateway]
 }
 
 # API Gateway HPA
-resource "kubernetes_horizontal_pod_autoscaler_v2" "api_gateway_hpa" {
-  count = var.enable_hpa ? 1 : 0
-
+resource "kubernetes_horizontal_pod_autoscaler_v2" "api_gateway" {
   metadata {
     name      = "api-gateway-hpa"
     namespace = kubernetes_namespace.microservices.metadata[0].name
@@ -242,7 +234,7 @@ resource "kubernetes_horizontal_pod_autoscaler_v2" "api_gateway_hpa" {
     }
 
     min_replicas = var.api_gateway_replicas
-    max_replicas = var.hpa_max_replicas
+    max_replicas = var.api_gateway_replicas
 
     metric {
       type = "Resource"
@@ -255,8 +247,6 @@ resource "kubernetes_horizontal_pod_autoscaler_v2" "api_gateway_hpa" {
       }
     }
   }
-
-  depends_on = [kubernetes_deployment.api_gateway]
 }
 
 # Frontend Deployment
@@ -295,10 +285,23 @@ resource "kubernetes_deployment" "frontend" {
 
       spec {
         node_selector = {
-          "kubernetes.io/arch" = var.worker_node_arch
+          "kubernetes.io/arch" = "arm64"
         }
 
-        # Anti-affinity for spreading pods
+        toleration {
+          key                = "node.kubernetes.io/unreachable"
+          operator           = "Exists"
+          effect             = "NoExecute"
+          toleration_seconds = 5
+        }
+
+        toleration {
+          key                = "node.kubernetes.io/not-ready"
+          operator           = "Exists"
+          effect             = "NoExecute"
+          toleration_seconds = 5
+        }
+
         affinity {
           pod_anti_affinity {
             preferred_during_scheduling_ignored_during_execution {
@@ -317,39 +320,13 @@ resource "kubernetes_deployment" "frontend" {
           }
         }
 
-        # Tolerations for node failures
-        toleration {
-          key                = "node.kubernetes.io/unreachable"
-          operator           = "Exists"
-          effect             = "NoExecute"
-          toleration_seconds = 5
-        }
-
-        toleration {
-          key                = "node.kubernetes.io/not-ready"
-          operator           = "Exists"
-          effect             = "NoExecute"
-          toleration_seconds = 5
-        }
-
         container {
-          name  = "frontend"
-          image = "${var.docker_registry}/frontend:${var.image_tag}"
+          name              = "frontend"
+          image             = "${var.registry_url}/frontend:latest"
           image_pull_policy = "Always"
 
           port {
             container_port = 80
-          }
-
-          resources {
-            requests = {
-              memory = "128Mi"
-              cpu    = "100m"
-            }
-            limits = {
-              memory = "256Mi"
-              cpu    = "250m"
-            }
           }
 
           readiness_probe {
@@ -371,12 +348,21 @@ resource "kubernetes_deployment" "frontend" {
             period_seconds        = 20
             failure_threshold     = 3
           }
+
+          resources {
+            requests = {
+              memory = "128Mi"
+              cpu    = "100m"
+            }
+            limits = {
+              memory = "256Mi"
+              cpu    = "250m"
+            }
+          }
         }
       }
     }
   }
-
-  depends_on = [kubernetes_service.api_gateway]
 }
 
 # Frontend Service
@@ -388,7 +374,7 @@ resource "kubernetes_service" "frontend" {
 
   spec {
     selector = {
-      app = "frontend"
+      app = kubernetes_deployment.frontend.spec[0].template[0].metadata[0].labels.app
     }
 
     port {
@@ -399,12 +385,10 @@ resource "kubernetes_service" "frontend" {
 
     type = "NodePort"
   }
-
-  depends_on = [kubernetes_deployment.frontend]
 }
 
 # Frontend PDB
-resource "kubernetes_pod_disruption_budget_v1" "frontend_pdb" {
+resource "kubernetes_pod_disruption_budget_v1" "frontend" {
   metadata {
     name      = "frontend-pdb"
     namespace = kubernetes_namespace.microservices.metadata[0].name
@@ -419,14 +403,10 @@ resource "kubernetes_pod_disruption_budget_v1" "frontend_pdb" {
       }
     }
   }
-
-  depends_on = [kubernetes_deployment.frontend]
 }
 
 # Frontend HPA
-resource "kubernetes_horizontal_pod_autoscaler_v2" "frontend_hpa" {
-  count = var.enable_hpa ? 1 : 0
-
+resource "kubernetes_horizontal_pod_autoscaler_v2" "frontend" {
   metadata {
     name      = "frontend-hpa"
     namespace = kubernetes_namespace.microservices.metadata[0].name
@@ -440,7 +420,7 @@ resource "kubernetes_horizontal_pod_autoscaler_v2" "frontend_hpa" {
     }
 
     min_replicas = var.frontend_replicas
-    max_replicas = var.hpa_max_replicas
+    max_replicas = var.frontend_replicas
 
     metric {
       type = "Resource"
@@ -453,6 +433,4 @@ resource "kubernetes_horizontal_pod_autoscaler_v2" "frontend_hpa" {
       }
     }
   }
-
-  depends_on = [kubernetes_deployment.frontend]
 }

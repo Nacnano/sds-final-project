@@ -1,34 +1,27 @@
-variable "kubeconfig_path" {
-  description = "Path to kubeconfig file for K3s cluster"
-  type        = string
-  default     = "~/.kube/config"
-}
-
 variable "namespace" {
   description = "Kubernetes namespace for microservices"
   type        = string
   default     = "microservices"
 }
 
-variable "docker_registry" {
-  description = "Docker registry URL for ARM images"
+variable "kube_context" {
+  description = "Kubernetes context to use"
+  type        = string
+  default     = "default"
+}
+
+variable "registry_url" {
+  description = "Docker registry URL"
   type        = string
   default     = "192.168.0.106:5000"
 }
 
-variable "image_tag" {
-  description = "Docker image tag"
-  type        = string
-  default     = "latest"
-}
-
-variable "master_node_hostname" {
-  description = "Hostname of the master node for database placement"
+variable "node_hostname" {
+  description = "Kubernetes node hostname for database"
   type        = string
   default     = "warissara-virtualbox"
 }
 
-# Database Configuration
 variable "postgres_user" {
   description = "PostgreSQL username"
   type        = string
@@ -50,15 +43,27 @@ variable "jwt_secret" {
   sensitive   = true
 }
 
-# Replica Configuration
-variable "api_gateway_replicas" {
-  description = "Number of API Gateway replicas"
-  type        = number
-  default     = 2
+variable "pgadmin_email" {
+  description = "PgAdmin default email"
+  type        = string
+  default     = "admin@example.com"
 }
 
-variable "frontend_replicas" {
-  description = "Number of Frontend replicas"
+variable "pgadmin_password" {
+  description = "PgAdmin default password"
+  type        = string
+  default     = "admin"
+  sensitive   = true
+}
+
+variable "frontend_url" {
+  description = "Frontend URL"
+  type        = string
+  default     = "http://localhost:30002"
+}
+
+variable "api_gateway_replicas" {
+  description = "Number of API Gateway replicas"
   type        = number
   default     = 2
 }
@@ -75,22 +80,8 @@ variable "location_service_replicas" {
   default     = 2
 }
 
-# Node Selector
-variable "worker_node_arch" {
-  description = "Architecture for worker nodes (arm64 for Raspberry Pi)"
-  type        = string
-  default     = "arm64"
-}
-
-# HPA Configuration
-variable "enable_hpa" {
-  description = "Enable Horizontal Pod Autoscaler"
-  type        = bool
-  default     = true
-}
-
-variable "hpa_max_replicas" {
-  description = "Maximum replicas for HPA"
+variable "frontend_replicas" {
+  description = "Number of Frontend replicas"
   type        = number
   default     = 2
 }
