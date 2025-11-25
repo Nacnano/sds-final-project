@@ -1,67 +1,54 @@
-terraform {
-  required_version = ">= 1.0"
-  required_providers {
-    null = {
-      source  = "hashicorp/null"
-      version = "~> 3.2"
-    }
+# Provider configuration
+provider "kubernetes" {
+  config_path = var.kubeconfig_path
+}
+
+# Namespace
+resource "kubernetes_namespace" "microservices" {
+  metadata {
+    name = var.namespace
   }
 }
 
-# K8s Services Deployment Module
-# Deploys services to existing K3s cluster
-module "k8s_deploy" {
-  source = "./modules/k8s-deploy"
-
-  master_ip          = var.master_ip
-  k8s_manifests_path = var.k8s_manifests_path
-}
-
-# Output deployment information
-output "deployment_info" {
-  value = {
-    master_ip    = var.master_ip
-    docker_hub   = "nacnano/sds-final-project-*"
-    frontend_url = "http://${var.master_ip}:30002"
-    api_url      = "http://${var.master_ip}:30000"
-    status       = module.k8s_deploy.deployment_status
+# ConfigMap
+resource "kubernetes_config_map" "microservices_config" {
+  metadata {
+    name      = "microservices-config"
+    namespace = kubernetes_namespace.microservices.metadata[0].name
   }
-  description = "Kubernetes deployment information"
+
+  data = {
+    NODE_ENV                = "production"
+    RABBITMQ_URL            = "amqp://rabbitmq:5672"
+    RABBITMQ_DEFAULT_USER   = "guest"
+    RABBITMQ_DEFAULT_PASS   = "guest"
+    SHRINE_DATABASE_HOST    = "shrine-db"
+    SHRINE_DATABASE_PORT    = "5432"
+    SHRINE_SERVICE_URL      = "shrine-service:5001"
+    LOCATION_SERVICE_URL    = "location-service:5006"
+    GATEWAY_PORT            = "3000"
+    SHRINE_GRPC_PORT        = "5001"
+    LOCATION_GRPC_PORT      = "5006"
+    FRONTEND_URL            = "http://localhost:30002"
+  }
 }
 
-output "next_steps" {
-  value = <<-EOT
-    ============================================
-    Services Deployed Successfully!
-    ============================================
-    
-    Master Node: ${var.master_ip}
-    Docker Images: Docker Hub (nacnano/sds-final-project-*)
-    
-    Application URLs:
-    - Frontend:    http://${var.master_ip}:30002
-    - API Gateway: http://${var.master_ip}:30000/shrines
-    
-    Monitoring Commands:
-    1. Check pods:
-       kubectl get pods -n microservices
-    
-    2. Watch deployment:
-       kubectl get pods -n microservices -w
-    
-    3. View logs:
-       kubectl logs -n microservices -l app=api-gateway
-       kubectl logs -n microservices -l app=shrine-service
-    
-    4. Check services:
-       kubectl get svc -n microservices
-    
-    Redeploy services:
-       terraform taint module.k8s_deploy.null_resource.verify_deployment
-       terraform apply
-    
-    For troubleshooting, see terraform/K8S_DEPLOYMENT.md
-    ============================================
-  EOT
-  description = "Instructions after deployment"
+# Secrets
+resource "kubernetes_secret" "microservices_secrets" {
+  metadata {
+    name      = "microservices-secrets"
+    namespace = kubernetes_namespace.microservices.metadata[0].name
+  }
+
+  data = {
+    POSTGRES_USER         = base64encode(var.postgres_user)
+    POSTGRES_PASSWORD     = base64encode(var.postgres_password)
+    DATABASE_USER         = base64encode(var.postgres_user)
+    DATABASE_PASSWORD     = base64encode(var.postgres_password)
+    JWT_SECRET           = base64encode(var.jwt_secret)
+    PGADMIN_DEFAULT_EMAIL    = base64encode("admin@example.com")
+    PGADMIN_DEFAULT_PASSWORD = base64encode("admin")
+  }
+
+  type = "Opaque"
 }

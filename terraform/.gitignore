@@ -1,23 +1,15 @@
 # Terraform files
 *.tfstate
 *.tfstate.*
+*.tfvars
+!terraform.tfvars.example
 .terraform/
 .terraform.lock.hcl
 crash.log
 crash.*.log
-
-# Sensitive files
-*.pem
-*.key
-k3s-token.txt
-terraform.tfvars.backup
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
