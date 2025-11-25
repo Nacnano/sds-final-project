@@ -132,3 +132,24 @@ resource "kubernetes_service" "shrine_db" {
     type = "ClusterIP"
   }
 }
+
+# Database Seeding
+resource "null_resource" "seed_databases" {
+  # Trigger seed when shrine-service deployment changes
+  triggers = {
+    shrine_service_id = kubernetes_deployment.shrine_service.id
+    shrine_db_id      = kubernetes_deployment.shrine_db.id
+  }
+
+  provisioner "local-exec" {
+    command     = "cd ${path.module}/.. && ./k8s/seed.sh"
+    working_dir = path.module
+    interpreter = ["/bin/bash", "-c"]
+  }
+
+  depends_on = [
+    kubernetes_deployment.shrine_service,
+    kubernetes_deployment.shrine_db,
+    kubernetes_service.shrine_db
+  ]
+}
