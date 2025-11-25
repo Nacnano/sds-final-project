@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: microservices-config
+  namespace: microservices
+data:
+  NODE_ENV: 'production'
+  RABBITMQ_URL: 'amqp://rabbitmq:5672'
+  RABBITMQ_DEFAULT_USER: 'guest'
+  RABBITMQ_DEFAULT_PASS: 'guest'
+  # Database hosts
+  SHRINE_DATABASE_HOST: 'shrine-db'
+  SHRINE_DATABASE_PORT: '5432'
+  # Service URLs
+  SHRINE_SERVICE_URL: 'shrine-service:5001'
+  LOCATION_SERVICE_URL: 'location-service:5006'
+  # Ports
+  GATEWAY_PORT: '3000'
+  SHRINE_GRPC_PORT: '5001'
+  LOCATION_GRPC_PORT: '5006'
+  FRONTEND_URL: 'http://localhost:30002'
