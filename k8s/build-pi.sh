@@ -14,7 +14,7 @@ if [ $? -eq 0 ]; then
     echo "Built images:"
     docker images | grep sds-final-project
 
-    REGISTRY="192.168.1.106:5000"
+    REGISTRY="192.168.0.106:5000"
 
     echo ""
     echo "Tagging images for local registry..."
