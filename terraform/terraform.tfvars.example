@@ -1,25 +1,31 @@
-# Example Terraform Variables Configuration
-# Copy this file to terraform.tfvars and customize for your setup
+# Terraform variable values
+# Copy this file to terraform.tfvars and customize as needed
 
-# Master node IP address (your laptop/desktop)
-master_ip = "192.168.1.10"
+# Kubernetes Configuration
+kubeconfig_path = "~/.kube/config"
+namespace       = "microservices"
 
-# Worker node IPs (Raspberry Pis)
-# Must have at least 4 workers for course requirements
-worker_ips = ["192.168.1.11", "192.168.1.12", "192.168.1.13", "192.168.1.14"]
+# Docker Registry (your master node IP)
+docker_registry = "192.168.0.106:5000"
+image_tag       = "latest"
 
-# SSH configuration
-ssh_user             = "ubuntu"
-ssh_private_key_path = "~/.ssh/id_rsa"  # Windows: C:/Users/YourName/.ssh/id_rsa
+# Master Node Configuration
+master_node_hostname = "warissara-virtualbox"
 
-# Cluster configuration
-cluster_name  = "sai-mu-cluster"
-k3s_version   = "v1.28.5+k3s1"  # Stable K3s version
-registry_port = 5000            # Docker registry port
+# Database Credentials (CHANGE IN PRODUCTION!)
+postgres_user     = "postgres"
+postgres_password = "postgres"
+jwt_secret        = "cr2YO0XOTY9t9Ijc6k59NU7KUnwn29uvIwzNfKXuiMItC+rAAOeDcDPjl6iq9+O+w9218kt584Zb5FwjWsDqYw=="
 
-# Optional: Install Kubernetes dashboard
-install_dashboard = false
+# Replica Configuration
+api_gateway_replicas     = 2
+frontend_replicas        = 2
+shrine_service_replicas  = 2
+location_service_replicas = 2
 
-# Note: Ensure all IPs are reachable and SSH keys are set up
-# Test connectivity: ping 192.168.1.11
-# Test SSH: ssh ubuntu@192.168.1.11
+# Node Selector (arm64 for Raspberry Pi)
+worker_node_arch = "arm64"
+
+# HPA Configuration
+enable_hpa        = true
+hpa_max_replicas = 2
