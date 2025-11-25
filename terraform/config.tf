@@ -31,12 +31,12 @@ resource "kubernetes_secret" "microservices_secrets" {
   type = "Opaque"
 
   data = {
-    POSTGRES_USER           = base64encode(var.postgres_user)
-    POSTGRES_PASSWORD       = base64encode(var.postgres_password)
-    DATABASE_USER           = base64encode(var.postgres_user)
-    DATABASE_PASSWORD       = base64encode(var.postgres_password)
-    JWT_SECRET              = base64encode(var.jwt_secret)
-    PGADMIN_DEFAULT_EMAIL   = base64encode(var.pgadmin_email)
-    PGADMIN_DEFAULT_PASSWORD = base64encode(var.pgadmin_password)
+    POSTGRES_USER           = var.postgres_user
+    POSTGRES_PASSWORD       = var.postgres_password
+    DATABASE_USER           = var.postgres_user
+    DATABASE_PASSWORD       = var.postgres_password
+    JWT_SECRET              = var.jwt_secret
+    PGADMIN_DEFAULT_EMAIL   = var.pgadmin_email
+    PGADMIN_DEFAULT_PASSWORD = var.pgadmin_password
   }
 }
