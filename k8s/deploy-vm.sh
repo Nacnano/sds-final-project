@@ -44,9 +44,9 @@ kubectl apply -f k8s/components.yaml
 # Run patch script (convert to Bash if needed)
 bash k8s/patch-metrics-server.sh || echo "Patch script failed or not converted"
 
-# 10. Deploy pgAdmin (optional)
-echo -e "\n\e[33m10. Deploying pgAdmin...\e[0m"
-kubectl apply -f k8s/pgadmin.yaml
+# # 10. Deploy pgAdmin (optional)
+# echo -e "\n\e[33m10. Deploying pgAdmin...\e[0m"
+# kubectl apply -f k8s/pgadmin.yaml
 
 # 11. Show deployment status
 echo -e "\n\e[33m11. Checking deployment status...\e[0m"
