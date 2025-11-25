@@ -34,6 +34,15 @@ spec:
                       values:
                         - api-gateway
                 topologyKey: kubernetes.io/hostname
+      tolerations:
+        - key: "node.kubernetes.io/unreachable"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 5
+        - key: "node.kubernetes.io/not-ready"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 5
       containers:
         - name: api-gateway
           image: 192.168.0.106:5000/api-gateway:latest
@@ -174,6 +183,15 @@ spec:
                       values:
                         - frontend
                 topologyKey: kubernetes.io/hostname
+      tolerations:
+        - key: "node.kubernetes.io/unreachable"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 5
+        - key: "node.kubernetes.io/not-ready"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 5
       containers:
         - name: frontend
           image: 192.168.0.106:5000/frontend:latest
