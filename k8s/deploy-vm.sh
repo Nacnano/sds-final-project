@@ -23,7 +23,7 @@ kubectl apply -f k8s/rabbitmq.yaml
 
 # Wait for databases to be ready
 echo -e "\n\e[33m5. Waiting for databases to be ready...\e[0m"
-sleep 5
+sleep 10
 
 # 6. Deploy microservices
 echo -e "\n\e[33m6. Deploying microservices...\e[0m"
