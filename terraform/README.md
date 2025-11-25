@@ -1,229 +1,232 @@
-# Terraform Infrastructure for Raspberry Pi Kubernetes Cluster
+# Terraform Kubernetes Deployment
 
-This directory contains Terraform configurations for provisioning the infrastructure for the สาย.mu Shrine Discovery Platform on Raspberry Pi.
+This directory contains Terraform configuration for deploying the microservices application to Kubernetes.
 
 ## Prerequisites
 
-1. **Terraform Installation**
-
-   ```powershell
-   # Windows (using Chocolatey)
-   choco install terraform
-
-   # Or download from https://www.terraform.io/downloads
+1. **Terraform**: Install Terraform >= 1.0
+   ```bash
+   # Ubuntu/Debian
+   wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+   echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+   sudo apt update && sudo apt install terraform
    ```
 
-2. **SSH Access to Raspberry Pis**
-   - **SSH is ONLY needed for Raspberry Pi worker nodes (not master)**
-   - Master node is YOUR computer running Terraform - no SSH needed
-   - Set up passwordless SSH to Raspberry Pis (192.168.1.11-14)
-   - Default user: `ubuntu` (for Ubuntu Server on Pi)
+2. **kubectl**: Configured with access to your Kubernetes cluster
 
-   ```powershell
-   # Generate SSH key if you don't have one
-   ssh-keygen -t rsa -b 4096
+3. **Docker Images**: Built and pushed to your registry
 
-   # Copy SSH key to each Raspberry Pi
-   ssh-copy-id ubuntu@192.168.1.11
-   ssh-copy-id ubuntu@192.168.1.12
-   ssh-copy-id ubuntu@192.168.1.13
-   ssh-copy-id ubuntu@192.168.1.14
+## Configuration
+
+1. **Create terraform.tfvars** (optional):
+   ```bash
+   cp terraform.tfvars.example terraform.tfvars
+   # Edit terraform.tfvars with your values
    ```
 
-3. **Network Configuration**
-   - Router: TP-Link TL-WR841N
-   - Master Node (Laptop): 192.168.1.10
-   - Raspberry Pi Nodes: 192.168.1.11-14
-   - All devices connected via Ethernet
-
-## Directory Structure
-
-```
-terraform/
-├── README.md                    # This file
-├── main.tf                      # Main configuration
-├── variables.tf                 # Variable definitions
-├── outputs.tf                   # Output definitions
-├── terraform.tfvars             # Variable values (customize this)
-├── modules/
-│   ├── master/                  # Master node configuration
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│   └── worker/                  # Worker node configuration
-│       ├── main.tf
-│       ├── variables.tf
-│       └── outputs.tf
-└── scripts/
-    ├── install-docker.sh        # Docker installation script
-    ├── setup-k3s-master.sh      # K3s master setup
-    ├── setup-k3s-worker.sh      # K3s worker setup
-    └── setup-registry.sh        # Docker registry setup
-
-```
+2. **Configure Variables**:
+   - `namespace`: Kubernetes namespace (default: microservices)
+   - `kube_context`: Kubernetes context to use
+   - `registry_url`: Docker registry URL
+   - `node_hostname`: Node hostname for database placement
+   - `postgres_user` and `postgres_password`: Database credentials
+   - `jwt_secret`: JWT secret for authentication
+   - Replica counts for services
 
 ## Quick Start
 
-### Option 1: Native Windows (PowerShell)
+### Deploy All Resources
 
-```powershell
-cd terraform
-.\setup.ps1 -Action apply
-```
-
-### Option 2: Using WSL (Recommended for SSH compatibility)
-
-```powershell
-cd terraform
-.\setup-wsl.ps1 -Action apply -UseWSL
-```
-
-### Option 3: Manual Terraform Commands
-
-```powershell
-cd terraform
+```bash
+# Initialize Terraform
 terraform init
+
+# Plan deployment
 terraform plan
+
+# Apply deployment
 terraform apply
+
+# Or use the deploy script
+bash deploy.sh
 ```
 
-**See also:**
+### Deploy with Custom Variables
 
-- [QUICKSTART.md](./QUICKSTART.md) - 10-minute quick start
-- [WSL_SETUP.md](./WSL_SETUP.md) - WSL setup guide
-- [SETUP_GUIDE.md](./SETUP_GUIDE.md) - Comprehensive guide
+```bash
+terraform apply -var="api_gateway_replicas=3" -var="frontend_replicas=4"
+```
 
-5. **Verify Cluster**
+### View Outputs
 
-   ```powershell
-   # SSH to master node
-   ssh ubuntu@192.168.1.10
+```bash
+terraform output
+```
 
-   # Check nodes
-   kubectl get nodes
+### Destroy Resources
+
+```bash
+terraform destroy
+
+# Or use the destroy script
+bash destroy.sh
+```
+
+## File Structure
+
+- `main.tf`: Provider configuration and namespace
+- `variables.tf`: Input variable definitions
+- `outputs.tf`: Output definitions
+- `config.tf`: ConfigMap and Secrets
+- `database.tf`: PostgreSQL database resources
+- `rabbitmq.tf`: RabbitMQ message broker resources
+- `services.tf`: Shrine and Location microservices
+- `gateway-frontend.tf`: API Gateway and Frontend resources
+- `deploy.sh`: Deployment script
+- `destroy.sh`: Destroy script
+
+## Deployment Order
+
+Terraform automatically handles dependencies:
+
+1. Namespace creation
+2. ConfigMap and Secrets
+3. Database (PostgreSQL) and RabbitMQ
+4. Microservices (Shrine Service, Location Service)
+5. API Gateway
+6. Frontend
+
+## Managing State
+
+Terraform state is stored locally by default in `terraform.tfstate`. For production:
+
+1. **Use Remote State** (recommended):
+   ```hcl
+   terraform {
+     backend "s3" {
+       bucket = "your-terraform-state"
+       key    = "microservices/terraform.tfstate"
+       region = "us-east-1"
+     }
+   }
    ```
 
-## Configuration Variables
-
-Key variables to customize in `terraform.tfvars`:
-
-- `master_ip` - Master node IP address (YOUR computer, default: 192.168.1.10)
-- `worker_ips` - List of Raspberry Pi IPs (default: ["192.168.1.11", "192.168.1.12", "192.168.1.13", "192.168.1.14"])
-- `ssh_user` - SSH username for **Raspberry Pis only** (default: ubuntu)
-- `ssh_private_key_path` - Path to SSH private key for **Raspberry Pis only**
-- `cluster_name` - Kubernetes cluster name (default: sai-mu-cluster)
-
-## What Terraform Will Do
-
-### Master Node (Your Computer - No SSH)
-
-Terraform will run these commands **locally on your computer** using `local-exec`:
-
-1. Install Docker
-2. Setup Docker registry on port 5000
-3. Install kubectl
-4. Initialize K3s master node
-5. Configure kubeconfig
-6. Install Kubernetes dashboard (optional)
-
-### Worker Nodes (Raspberry Pis - SSH Required)
-
-Terraform will connect via SSH to each Raspberry Pi and:
-
-1. Install Docker on each Pi
-2. Join K3s cluster as worker nodes
-3. Configure container runtime
-4. Label nodes appropriately
-
-## Post-Terraform Steps
-
-After Terraform completes:
-
-1. **Build and Push Docker Images**
-
-   ```powershell
-   cd k8s
-   .\build-arm.ps1
+2. **Backup State Files**:
+   ```bash
+   cp terraform.tfstate terraform.tfstate.backup
    ```
 
-2. **Deploy Application**
+## Common Operations
 
-   ```powershell
-   .\deploy-pi.ps1
-   ```
+### Scale Services
 
-3. **Verify Deployment**
-   ```powershell
-   kubectl get pods -n microservices
-   kubectl get svc -n microservices
-   ```
+```bash
+# Edit variables.tf or terraform.tfvars
+# Then apply
+terraform apply -var="api_gateway_replicas=5"
+```
+
+### Update Image
+
+```bash
+# Images are pulled with imagePullPolicy: Always
+# Just apply to restart pods
+terraform apply -replace="kubernetes_deployment.api_gateway"
+```
+
+### View Resources
+
+```bash
+# Show all resources
+terraform state list
+
+# Show specific resource
+terraform state show kubernetes_deployment.api_gateway
+```
+
+### Import Existing Resources
+
+```bash
+terraform import kubernetes_namespace.microservices microservices
+```
 
 ## Troubleshooting
 
-### SSH Connection Issues
-
-```powershell
-# Test SSH connectivity
-ssh ubuntu@192.168.1.11 "echo 'Connection successful'"
-
-# Check SSH key permissions
-icacls $env:USERPROFILE\.ssh\id_rsa
-```
-
-### Terraform State Issues
-
-```powershell
-# Reset state if needed
-terraform state list
-terraform state rm <resource_name>
-```
-
-### K3s Issues
+### View Terraform Plan
 
 ```bash
-# On master: Check K3s status
-sudo systemctl status k3s
-
-# On worker: Check K3s agent status
-sudo systemctl status k3s-agent
-
-# View logs
-sudo journalctl -u k3s -f
+terraform plan -out=tfplan
+terraform show tfplan
 ```
 
-## Destroy Infrastructure
+### Debug Provider Issues
 
-To tear down the cluster:
-
-```powershell
-terraform destroy
+```bash
+export TF_LOG=DEBUG
+terraform apply
 ```
 
-**Warning**: This will:
+### Force Resource Recreation
 
-- Remove K3s from all nodes
-- Remove Docker registry
-- Clean up configuration files
-- NOT remove Docker itself (requires manual cleanup)
+```bash
+terraform taint kubernetes_deployment.api_gateway
+terraform apply
+```
 
-## Notes
+### Check Kubernetes Resources
 
-- This Terraform configuration uses `null_resource` with `remote-exec` provisioners
-- It assumes Ubuntu Server is already installed on all Raspberry Pis
-- Network configuration must be done manually on the router
-- For production, consider using proper configuration management (Ansible, etc.)
+```bash
+kubectl get all -n microservices
+kubectl describe pod <pod-name> -n microservices
+kubectl logs <pod-name> -n microservices
+```
+
+## Comparison with deploy-vm.sh
+
+| Feature | deploy-vm.sh | Terraform |
+|---------|--------------|-----------|
+| State Management | None | Yes (terraform.tfstate) |
+| Idempotent | No | Yes |
+| Dependency Management | Manual (sleep) | Automatic |
+| Resource Updates | Replace all | Incremental |
+| Rollback | Manual | terraform state |
+| Variable Management | Hardcoded | Variables file |
+| Preview Changes | No | terraform plan |
+
+## Migration from deploy-vm.sh
+
+The Terraform configuration replicates all functionality from `deploy-vm.sh`:
+
+- ✅ Namespace creation
+- ✅ ConfigMap and Secrets
+- ✅ Database deployment (PostgreSQL)
+- ✅ RabbitMQ deployment
+- ✅ Microservices deployment
+- ✅ API Gateway deployment
+- ✅ Frontend deployment
+- ✅ HPA (Horizontal Pod Autoscaler)
+- ✅ PDB (Pod Disruption Budget)
+- ✅ Node selectors and tolerations
+- ✅ Resource limits and requests
+
+## Next Steps
+
+1. Deploy metrics server:
+   ```bash
+   kubectl apply -f ../k8s/components.yaml
+   bash ../k8s/patch-metrics-server.sh
+   ```
+
+2. Seed database:
+   ```bash
+   bash ../k8s/seed.sh
+   ```
+
+3. Monitor deployment:
+   ```bash
+   watch kubectl get pods -n microservices
+   ```
 
 ## Support
 
-For issues specific to:
-
-- **Terraform**: Check Terraform logs with `TF_LOG=DEBUG`
-- **K3s**: See [K3s Documentation](https://docs.k3s.io/)
-- **Project**: Refer to RASPBERRY_PI_COMPLETE_GUIDE.md
-
-## Course Requirements Met
-
-✅ Kubernetes cluster with 4+ Raspberry Pis  
-✅ Automated deployment configuration  
-✅ Infrastructure as Code approach  
-✅ Reproducible cluster setup
+For issues or questions, refer to the main project documentation or check the Kubernetes dashboard.

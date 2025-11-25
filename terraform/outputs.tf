@@ -1,24 +1,31 @@
-output "master_ip" {
-  description = "Master node IP address"
-  value       = var.master_ip
+output "namespace" {
+  description = "Kubernetes namespace"
+  value       = kubernetes_namespace.microservices.metadata[0].name
 }
 
-output "worker_ips" {
-  description = "Worker node IP addresses"
-  value       = var.worker_ips
+output "api_gateway_url" {
+  description = "API Gateway URL"
+  value       = "http://${var.node_hostname}:30000"
 }
 
-output "docker_hub_images" {
-  description = "Docker Hub image repository"
-  value       = "nacnano/sds-final-project-*"
+output "frontend_url" {
+  description = "Frontend URL"
+  value       = "http://${var.node_hostname}:30002"
 }
 
-output "cluster_endpoint" {
-  description = "Kubernetes API endpoint"
-  value       = "https://${var.master_ip}:6443"
+output "pgadmin_url" {
+  description = "PgAdmin URL (if enabled)"
+  value       = "http://${var.node_hostname}:30080"
 }
 
-output "kubeconfig_path" {
-  description = "Path to kubeconfig file on master node"
-  value       = "/home/${var.ssh_user}/.kube/config"
+output "services" {
+  description = "Deployed services"
+  value = {
+    api_gateway      = kubernetes_service.api_gateway.metadata[0].name
+    shrine_service   = kubernetes_service.shrine_service.metadata[0].name
+    location_service = kubernetes_service.location_service.metadata[0].name
+    frontend         = kubernetes_service.frontend.metadata[0].name
+    shrine_db        = kubernetes_service.shrine_db.metadata[0].name
+    rabbitmq         = kubernetes_service.rabbitmq.metadata[0].name
+  }
 }

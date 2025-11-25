@@ -27,8 +27,16 @@ spec:
       labels:
         app: shrine-db
     spec:
+      # Force the pod to run on the master node
       nodeSelector:
-        kubernetes.io/arch: arm64
+        kubernetes.io/hostname: warissara-virtualbox
+
+      # Allow running on the master even if it is tainted
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+
       containers:
         - name: postgres
           image: postgres:15-alpine
@@ -50,13 +58,6 @@ spec:
           volumeMounts:
             - name: shrine-db-storage
               mountPath: /var/lib/postgresql/data
-          resources:
-            requests:
-              memory: '256Mi'
-              cpu: '250m'
-            limits:
-              memory: '512Mi'
-              cpu: '500m'
       volumes:
         - name: shrine-db-storage
           persistentVolumeClaim:
