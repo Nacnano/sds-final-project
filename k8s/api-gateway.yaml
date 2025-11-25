@@ -20,6 +20,8 @@ spec:
       labels:
         app: api-gateway
     spec:
+      nodeSelector:
+        kubernetes.io/arch: arm64
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -34,7 +36,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
       containers:
         - name: api-gateway
-          image: api-gateway:latest
+          image: 192.168.1.106:5000/api-gateway:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 3000
@@ -158,6 +160,8 @@ spec:
       labels:
         app: frontend
     spec:
+      nodeSelector:
+        kubernetes.io/arch: arm64
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -172,8 +176,8 @@ spec:
                 topologyKey: kubernetes.io/hostname
       containers:
         - name: frontend
-          image: frontend:latest
-          imagePullPolicy: Never
+          image: 192.168.1.106:5000/frontend:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
           readinessProbe:

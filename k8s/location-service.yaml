@@ -15,10 +15,12 @@ spec:
       labels:
         app: location-service
     spec:
+      nodeSelector:
+        kubernetes.io/arch: arm64
       containers:
         - name: location-service
-          image: location-service:latest
-          imagePullPolicy: Never # For local Docker Desktop
+          image: 192.168.1.106:5000/location-service:latest
+          imagePullPolicy: IfNotPresent # Never For local Docker Desktop
           ports:
             - containerPort: 5006
           env:

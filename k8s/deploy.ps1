@@ -37,7 +37,8 @@ kubectl apply -f k8s/api-gateway.yaml
 
 # 9. Deploy Metrics Server (for HPA)
 Write-Host "`n9. Deploying Metrics Server..." -ForegroundColor Yellow
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+# kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+kubectl apply -f k8s/components.yaml
 k8s/patch-metrics-server.ps1
 
 # 10. Deploy pgAdmin (optional)
@@ -51,6 +52,10 @@ kubectl get all -n microservices
 # 12. Seed databases
 Write-Host "`n12. Seeding databases..." -ForegroundColor Yellow
 ./k8s/seed.ps1
+
+# 13. Deploy frontend
+Write-Host "`n13. Deploying frontend..." -ForegroundColor Yellow
+kubectl apply -f k8s/frontend.yaml
 
 Write-Host "`nDeployment complete!" -ForegroundColor Green
 Write-Host "`nTo access the services:" -ForegroundColor Cyan

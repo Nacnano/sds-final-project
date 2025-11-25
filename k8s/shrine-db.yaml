@@ -27,6 +27,8 @@ spec:
       labels:
         app: shrine-db
     spec:
+      nodeSelector:
+        kubernetes.io/arch: arm64
       containers:
         - name: postgres
           image: postgres:15-alpine
