@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shrine-service
+  namespace: microservices
+  labels:
+    app: shrine-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shrine-service
+  template:
+    metadata:
+      labels:
+        app: shrine-service
+    spec:
+      containers:
+        - name: shrine-service
+          image: shrine-service:latest
+          imagePullPolicy: Never # For local Docker Desktop
+          ports:
+            - containerPort: 5001
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: NODE_ENV
+            - name: SHRINE_GRPC_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: SHRINE_GRPC_PORT
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: SHRINE_DATABASE_HOST
+            - name: DATABASE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: SHRINE_DATABASE_PORT
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: microservices-secrets
+                  key: DATABASE_USER
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: microservices-secrets
+                  key: DATABASE_PASSWORD
+            - name: RABBITMQ_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: RABBITMQ_URL
+            - name: LOCATION_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: microservices-config
+                  key: LOCATION_SERVICE_URL
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '250m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shrine-service
+  namespace: microservices
+spec:
+  selector:
+    app: shrine-service
+  ports:
+    - port: 5001
+      targetPort: 5001
+  type: ClusterIP
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: shrine-service-hpa
+  namespace: microservices
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: shrine-service
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
