@@ -19,8 +19,8 @@ spec:
         kubernetes.io/arch: arm64
       containers:
         - name: shrine-service
-          image: 192.168.1.106:5000/shrine-service:latest
-          imagePullPolicy: IfNotPresent # Never For local Docker Desktop
+          image: 192.168.0.106:5000/shrine-service:latest
+          imagePullPolicy: Always # Never For local Docker Desktop
           ports:
             - containerPort: 5001
           env:
