@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: frontend
 spec:
-  replicas: 2  # Increased replicas for HA
+  replicas: 3  # Increased replicas for HA
   selector:
     matchLabels:
       app: frontend
