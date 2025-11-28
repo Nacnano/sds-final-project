@@ -151,6 +151,26 @@ ifconfig
 save this as `<MASTER_NODE_IP>`
 ![alt text](readme-images/ifconfig.jpg)
 
+5. edit k3s config
+```bash
+sudo systemctl edit k3s
+```
+6. add this code
+```bash
+[Service]
+ExecStart=
+ExecStart=/usr/local/bin/k3s server \
+  --kube-controller-manager-arg=node-monitor-grace-period=12s \
+  --kube-controller-manager-arg=node-monitor-period=2s \
+  --kubelet-arg=node-status-update-frequency=4s
+```
+
+7. restart and reload
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart k3s
+```
+
 ### **Workers (Raspberry Pi)**
 
 run this on each pi
@@ -353,53 +373,17 @@ This ensures pods run only on ARM64 Raspberry Pis.
 
 ---
 
-**Verify deployments**
-
-```bash
-kubectl get pods -n microservices -o wide
-```
-
-![alt text](readme-images/get-pods.jpg)
-
-**Explain**
-
-- Only **shrine-db** runs on the master VM.
-- All other services run on the Raspberry Pi workers.
-
-This is controlled by Kubernetes `nodeSelector`:
-
-- master
-
-```yaml
-spec:
-  nodeSelector:
-    kubernetes.io/hostname: warissara-virtualbox
-```
-
-This forces the pod to run only on the VM.
-
-- worker
-
-```yaml
-spec:
-  nodeSelector:
-    kubernetes.io/arch: arm64
-```
-This ensures pods run only on ARM64 Raspberry Pis.
-
----
-
 ## **Step 8: Delete VM Deployment**
 
 If cleanup is needed.
 
-## Choice 1: Deploy with K3S Directly
+## Choice 1: Delete with K3S Directly
 
 ```bash
 ./k8s/delete-vm.sh
 ```
 
-## Choice 2: Deploy with Terraform
+## Choice 2: Delete with Terraform
 
 ```bash
 ./terraform/destroy.sh
