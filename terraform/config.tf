@@ -7,9 +7,6 @@ resource "kubernetes_config_map" "microservices_config" {
 
   data = {
     NODE_ENV                = "production"
-    RABBITMQ_URL            = "amqp://rabbitmq:5672"
-    RABBITMQ_DEFAULT_USER   = "guest"
-    RABBITMQ_DEFAULT_PASS   = "guest"
     SHRINE_DATABASE_HOST    = "shrine-db"
     SHRINE_DATABASE_PORT    = "5432"
     SHRINE_SERVICE_URL      = "shrine-service:5001"

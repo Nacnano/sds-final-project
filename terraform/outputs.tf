@@ -26,6 +26,5 @@ output "services" {
     location_service = kubernetes_service.location_service.metadata[0].name
     frontend         = kubernetes_service.frontend.metadata[0].name
     shrine_db        = kubernetes_service.shrine_db.metadata[0].name
-    rabbitmq         = kubernetes_service.rabbitmq.metadata[0].name
   }
 }

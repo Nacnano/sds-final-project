@@ -141,16 +141,6 @@ resource "kubernetes_deployment" "shrine_service" {
           }
 
           env {
-            name = "RABBITMQ_URL"
-            value_from {
-              config_map_key_ref {
-                name = kubernetes_config_map.microservices_config.metadata[0].name
-                key  = "RABBITMQ_URL"
-              }
-            }
-          }
-
-          env {
             name = "LOCATION_SERVICE_URL"
             value_from {
               config_map_key_ref {
@@ -195,7 +185,6 @@ resource "kubernetes_deployment" "shrine_service" {
 
   depends_on = [
     kubernetes_deployment.shrine_db,
-    kubernetes_deployment.rabbitmq,
     kubernetes_config_map.microservices_config,
     kubernetes_secret.microservices_secrets
   ]
