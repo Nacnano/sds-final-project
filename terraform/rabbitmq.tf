@@ -11,6 +11,14 @@ resource "kubernetes_deployment" "rabbitmq" {
   spec {
     replicas = 1
 
+    strategy {
+      type = "RollingUpdate"
+      rolling_update {
+        max_unavailable = "0"
+        max_surge       = "1"
+      }
+    }
+
     selector {
       match_labels = {
         app = "rabbitmq"
@@ -25,6 +33,8 @@ resource "kubernetes_deployment" "rabbitmq" {
       }
 
       spec {
+        termination_grace_period_seconds = 30
+
         node_selector = {
           "kubernetes.io/arch" = "arm64"
         }
@@ -72,6 +82,24 @@ resource "kubernetes_deployment" "rabbitmq" {
               memory = "512Mi"
               cpu    = "500m"
             }
+          }
+
+          readiness_probe {
+            tcp_socket {
+              port = 5672
+            }
+            initial_delay_seconds = 20
+            period_seconds        = 10
+            failure_threshold     = 3
+          }
+
+          liveness_probe {
+            tcp_socket {
+              port = 5672
+            }
+            initial_delay_seconds = 30
+            period_seconds        = 20
+            failure_threshold     = 3
           }
         }
       }

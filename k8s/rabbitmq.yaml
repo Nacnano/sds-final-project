@@ -7,6 +7,11 @@ metadata:
     app: rabbitmq
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app: rabbitmq
@@ -15,6 +20,7 @@ spec:
       labels:
         app: rabbitmq
     spec:
+      terminationGracePeriodSeconds: 30
       nodeSelector:
         kubernetes.io/arch: arm64
       containers:
@@ -43,6 +49,18 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
+        readinessProbe:
+          tcpSocket:
+            port: 5672
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          failureThreshold: 3
+        livenessProbe:
+          tcpSocket:
+            port: 5672
+          initialDelaySeconds: 30
+          periodSeconds: 20
+          failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service
