@@ -11,6 +11,14 @@ resource "kubernetes_deployment" "shrine_service" {
   spec {
     replicas = var.shrine_service_replicas
 
+    strategy {
+      type = "RollingUpdate"
+      rolling_update {
+        max_unavailable = "1"
+        max_surge       = "1"
+      }
+    }
+
     selector {
       match_labels = {
         app = "shrine-service"
@@ -25,6 +33,8 @@ resource "kubernetes_deployment" "shrine_service" {
       }
 
       spec {
+        termination_grace_period_seconds = 30
+
         node_selector = {
           "kubernetes.io/arch" = "arm64"
         }
@@ -160,6 +170,24 @@ resource "kubernetes_deployment" "shrine_service" {
               cpu    = "500m"
             }
           }
+
+          readiness_probe {
+            tcp_socket {
+              port = 5001
+            }
+            initial_delay_seconds = 10
+            period_seconds        = 10
+            failure_threshold     = 3
+          }
+
+          liveness_probe {
+            tcp_socket {
+              port = 5001
+            }
+            initial_delay_seconds = 30
+            period_seconds        = 20
+            failure_threshold     = 3
+          }
         }
       }
     }
@@ -237,6 +265,14 @@ resource "kubernetes_deployment" "location_service" {
   spec {
     replicas = var.location_service_replicas
 
+    strategy {
+      type = "RollingUpdate"
+      rolling_update {
+        max_unavailable = "1"
+        max_surge       = "1"
+      }
+    }
+
     selector {
       match_labels = {
         app = "location-service"
@@ -251,6 +287,8 @@ resource "kubernetes_deployment" "location_service" {
       }
 
       spec {
+        termination_grace_period_seconds = 30
+
         node_selector = {
           "kubernetes.io/arch" = "arm64"
         }
@@ -325,6 +363,24 @@ resource "kubernetes_deployment" "location_service" {
               memory = "512Mi"
               cpu    = "500m"
             }
+          }
+
+          readiness_probe {
+            tcp_socket {
+              port = 5006
+            }
+            initial_delay_seconds = 10
+            period_seconds        = 10
+            failure_threshold     = 3
+          }
+
+          liveness_probe {
+            tcp_socket {
+              port = 5006
+            }
+            initial_delay_seconds = 30
+            period_seconds        = 20
+            failure_threshold     = 3
           }
         }
       }
