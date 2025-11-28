@@ -33,7 +33,7 @@ resource "kubernetes_deployment" "rabbitmq" {
       }
 
       spec {
-        termination_grace_period_seconds = 30
+        termination_grace_period_seconds = 10
 
         node_selector = {
           "kubernetes.io/arch" = "arm64"

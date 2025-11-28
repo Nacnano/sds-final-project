@@ -20,7 +20,7 @@ spec:
       labels:
         app: location-service
     spec:
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 10
       nodeSelector:
         kubernetes.io/arch: arm64
       containers:
