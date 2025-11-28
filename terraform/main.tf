@@ -39,4 +39,7 @@ resource "kubernetes_namespace" "microservices" {
       name = var.namespace
     }
   }
+  lifecycle {
+    prevent_destroy = true
+  }
 }
