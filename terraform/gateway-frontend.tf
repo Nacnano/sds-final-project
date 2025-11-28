@@ -286,6 +286,8 @@ resource "kubernetes_deployment" "frontend" {
       }
 
       spec {
+        termination_grace_period_seconds = 10
+
         node_selector = {
           "kubernetes.io/arch" = "arm64"
         }
