@@ -19,6 +19,14 @@ import { LocationController } from './location.controller';
 								? join(__dirname, '../../../proto/location.proto')
 								: join(__dirname, '../proto/location.proto'),
 						url: configService.get('LOCATION_SERVICE_URL', 'localhost:5006'),
+						channelOptions: {
+							'grpc.keepalive_time_ms': 10000, // Send keepalive ping every 10s
+							'grpc.keepalive_timeout_ms': 5000, // Wait 5s for ping ack before considering connection dead
+							'grpc.keepalive_permit_without_calls': 1, // Allow keepalive pings even when no calls are in flight
+							'grpc.http2.max_pings_without_data': 0, // Allow unlimited pings without data
+							'grpc.initial_reconnect_backoff_ms': 1000, // Initial backoff of 1s before reconnecting
+							'grpc.max_reconnect_backoff_ms': 5000, // Max backoff of 5s between reconnection attempts
+						},
 					},
 				}),
 				inject: [ConfigService],
