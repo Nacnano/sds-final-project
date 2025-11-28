@@ -7,6 +7,11 @@ metadata:
     app: shrine-service
 spec:
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   selector:
     matchLabels:
       app: shrine-service
@@ -15,6 +20,7 @@ spec:
       labels:
         app: shrine-service
     spec:
+      terminationGracePeriodSeconds: 30
       nodeSelector:
         kubernetes.io/arch: arm64
       containers:
@@ -71,6 +77,18 @@ spec:
             limits:
               memory: '512Mi'
               cpu: '500m'
+          readinessProbe:
+            tcpSocket:
+              port: 5001
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 5001
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            failureThreshold: 3
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
