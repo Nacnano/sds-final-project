@@ -88,7 +88,7 @@ resource "kubernetes_deployment" "rabbitmq" {
             tcp_socket {
               port = 5672
             }
-            initial_delay_seconds = 20
+            initial_delay_seconds = 60
             period_seconds        = 10
             failure_threshold     = 3
           }

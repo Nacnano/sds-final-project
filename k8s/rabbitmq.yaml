@@ -52,7 +52,7 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 5672
-          initialDelaySeconds: 20
+          initialDelaySeconds: 60
           periodSeconds: 10
           failureThreshold: 3
         livenessProbe:
