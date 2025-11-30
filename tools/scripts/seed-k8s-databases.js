@@ -280,7 +280,15 @@ async function seedShrines(client) {
       id, "createdAt", "updatedAt", name, description, location, lat, lng, category, image_url
     )
     VALUES ($1, NOW(), NOW(), $2, $3, $4, $5, $6, $7, $8)
-    ON CONFLICT (id) DO NOTHING
+    ON CONFLICT (id) DO UPDATE SET
+      "updatedAt" = NOW(),
+      name = EXCLUDED.name,
+      description = EXCLUDED.description,
+      location = EXCLUDED.location,
+      lat = EXCLUDED.lat,
+      lng = EXCLUDED.lng,
+      category = EXCLUDED.category,
+      image_url = EXCLUDED.image_url
   `;
 
   for (const shrine of shrineData) {
