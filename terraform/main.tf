@@ -38,4 +38,5 @@ resource "kubernetes_namespace" "microservices" {
     labels = {
       name = var.namespace
     }
+  }
 }
