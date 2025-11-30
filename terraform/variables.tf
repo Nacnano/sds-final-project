@@ -71,7 +71,7 @@ variable "api_gateway_replicas" {
 variable "shrine_service_replicas" {
   description = "Number of Shrine Service replicas"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "location_service_replicas" {
@@ -83,5 +83,5 @@ variable "location_service_replicas" {
 variable "frontend_replicas" {
   description = "Number of Frontend replicas"
   type        = number
-  default     = 2
+  default     = 3
 }
