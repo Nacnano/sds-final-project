@@ -268,8 +268,7 @@ async function seedShrines(client) {
   const count = parseInt(res.rows[0].count);
 
   if (count > 0) {
-    console.log(`   ⚠️  Shrines table already has ${count} records. Skipping seed.`);
-    return;
+    console.log(`   ⚠️  Shrines table already has ${count} records. Proceeding with seed anyway...`);
   }
 
   console.log('   Inserting shrines...');
